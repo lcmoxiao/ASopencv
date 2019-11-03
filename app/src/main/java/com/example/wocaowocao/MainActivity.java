@@ -3,53 +3,33 @@ package com.example.wocaowocao;
 
 import android.Manifest;
 import android.content.Intent;
-
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
-
+import com.example.wocaowocao.Base.BaseActivity;
+import com.example.wocaowocao.Base.ViewInject;
+import com.example.wocaowocao.floatwin.floatwinActivity;
+import com.example.wocaowocao.recogImg.recogImgActivity;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import butterknife.BindView;
-import butterknife.OnClick;
 
 
 @ViewInject(main_layout_id = R.layout.activity_main)
 public class MainActivity extends BaseActivity {
 
+
     @BindView(R.id.select_btn1)
     Button selectBtn1;
     @BindView(R.id.select_btn2)
     Button selectBtn2;
-    @BindView(R.id.process_btn)
-    Button processBtn;
-    @BindView(R.id.imageView1)
-    ImageView ImageView1;
-    @BindView(R.id.imageView2)
-    ImageView ImageView2;
     @BindView(R.id.activity_main)
     LinearLayout mLayout;
-
-    private Bitmap Bp1;
-    private Bitmap Bp2;
-    private static String imgPath = Environment.getExternalStorageDirectory()+"/images/" ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,118 +38,58 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void afterBindView() {
-        getPermission();
+        initClick();
+        initPermission();
 
-        useOpencv.staticLoadCVLibraries();
+
+
+    }
+
+
+
+
+
+
+    void initClick(){
         selectBtn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                select1Image(imgPath);
+                startActivity(new Intent(MainActivity.this, recogImgActivity.class));
             }
         });
         selectBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                select2Image(imgPath);
-            }
-        });
-        processBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(useOpencv.HashCompare(Bp1, Bp2))
-                    Toast.makeText(getBaseContext(),"真像",Toast.LENGTH_LONG).show();
-                    else
-                    Toast.makeText(getBaseContext(),"像个屁",Toast.LENGTH_LONG).show();
+                startActivity(new Intent(MainActivity.this, floatwinActivity.class));
             }
         });
     }
 
-
-    private void select1Image(String path) {
-        try {
-            File f = new File(path, "home.png");
-            Bp1 = BitmapFactory.decodeStream(new FileInputStream(f));
-            ImageView1.setImageBitmap(Bp1);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void initPermission(){
+        getPermission(Manifest.permission.SYSTEM_ALERT_WINDOW);
+        getPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
     }
-
-    private void select2Image(String path) {
-        try {
-            File f = new File(path, "temp.png");
-            Bp2 = BitmapFactory.decodeStream(new FileInputStream(f));
-            ImageView2.setImageBitmap(Bp2);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        //startActivityForResult(Intent.createChooser(new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT), "选择图像..."), 2);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri uri = data.getData();
-            try {
-                Log.d("image-tag", "start to decode selected image now...");
-                InputStream input = getContentResolver().openInputStream(uri);
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeStream(input, null, options);
-
-                options.inSampleSize = 2;
-                options.inJustDecodeBounds = false;
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bp1 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, options);
-
-                ImageView1.setImageBitmap(Bp1);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri uri = data.getData();
-            try {
-                Log.d("image-tag", "start to decode selected image now...");
-                InputStream input = getContentResolver().openInputStream(uri);
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeStream(input, null, options);
-
-
-                options.inSampleSize = 2;
-                options.inJustDecodeBounds = false;
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bp2 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, options);
-
-                ImageView2.setImageBitmap(Bp2);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     //获取读写的权限
-    private void getPermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+    private void getPermission(String permission) {
+        if (ActivityCompat.checkSelfPermission(this, permission)
                 == PackageManager.PERMISSION_GRANTED) {
             Snackbar.make(mLayout,
-                    "你可以"+ Manifest.permission.READ_EXTERNAL_STORAGE,
+                    "你可以" + permission,
                     Snackbar.LENGTH_SHORT).show();
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                Snackbar.make(mLayout,"尝试获取权限"+ Manifest.permission.READ_EXTERNAL_STORAGE, Snackbar.LENGTH_INDEFINITE).show();
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 66);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                Snackbar.make(mLayout, "尝试获取权限" + permission, Snackbar.LENGTH_INDEFINITE).show();
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, 67);
             } else {
-                Snackbar.make(mLayout, "你早就拒绝过"+ Manifest.permission.READ_EXTERNAL_STORAGE, Snackbar.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 66);
+                Snackbar.make(mLayout, "你选择过了" + permission, Snackbar.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this, new String[]{permission}, 67);
             }
         }
     }
+
+
+
 
 
 }

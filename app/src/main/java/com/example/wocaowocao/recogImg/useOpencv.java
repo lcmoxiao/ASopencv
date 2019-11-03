@@ -1,8 +1,7 @@
-package com.example.wocaowocao;
+package com.example.wocaowocao.recogImg;
 
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;

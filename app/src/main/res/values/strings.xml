@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">wocaowocao</string>
+    <string name="selecimg1">选择图片1</string>
+    <string name="selecimg2">选择图片2</string>
+    <string name="deal">处理</string>
+    <string name="todo">TODO</string>
+    <string name="startfloatwin">开启悬浮窗</string>
+    <string name="recogimg">图像识别</string>
+    <string name="floatwin">悬浮窗</string>
 </resources>

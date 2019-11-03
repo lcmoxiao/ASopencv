@@ -1,4 +1,4 @@
-package com.example.wocaowocao;
+package com.example.wocaowocao.Base;
 
 import android.os.Bundle;
 
@@ -20,7 +20,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             int main_layout_id = annotation.main_layout_id();
             if(main_layout_id > 0)
             {
-//Set the activity content from a layout resource
                 setContentView(main_layout_id);
                 bindView();
                 afterBindView();
