@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
@@ -16,6 +18,8 @@ import com.example.wocaowocao.Base.ViewInject;
 import com.example.wocaowocao.floatwin.floatwinActivity;
 import com.example.wocaowocao.recogImg.recogImgActivity;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.io.DataOutputStream;
 
 import butterknife.BindView;
 
@@ -30,27 +34,36 @@ public class MainActivity extends BaseActivity {
     Button selectBtn2;
     @BindView(R.id.activity_main)
     LinearLayout mLayout;
+    @BindView(R.id.select_btn3)
+    Button selectBtn3;
+
+    static CMD cmd = new CMD();
+    static DataOutputStream os = null;
+    @BindView(R.id.img1)
+    ImageView img1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+
     @Override
     public void afterBindView() {
         initClick();
         initPermission();
 
+        try {
+            os = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
 
 
-
-
-
-
-    void initClick(){
+    void initClick() {
         selectBtn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,12 +73,28 @@ public class MainActivity extends BaseActivity {
         selectBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, floatwinActivity.class));
+                //startActivity(new Intent(MainActivity.this, floatwinActivity.class));
+                cmd.simulateKey(24, os);
+
             }
         });
+        selectBtn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cmd.simulateClick(128,421, os);
+            }
+        });
+        img1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getBaseContext(), "别tm点了", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
-    private void initPermission(){
+    private void initPermission() {
+        cmd.exec("\"chmod 777 \"+getPackageCodePath()", os);
         getPermission(Manifest.permission.SYSTEM_ALERT_WINDOW);
         getPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
     }
@@ -87,9 +116,5 @@ public class MainActivity extends BaseActivity {
             }
         }
     }
-
-
-
-
 
 }

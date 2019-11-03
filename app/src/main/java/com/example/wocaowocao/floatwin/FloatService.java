@@ -1,10 +1,12 @@
 package com.example.wocaowocao.floatwin;
 
 import android.annotation.SuppressLint;
+import android.app.Instrumentation;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -112,6 +114,10 @@ public class FloatService extends Service {
         });
 
     }
+
+
+
+
 }
 
 
