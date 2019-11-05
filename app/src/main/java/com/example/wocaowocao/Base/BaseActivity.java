@@ -22,17 +22,23 @@ public abstract class BaseActivity extends AppCompatActivity {
             {
                 setContentView(main_layout_id);
                 bindView();
-                afterBindView();
+                try
+                {
+                    afterBindView();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             else throw new RuntimeException("main_layout_id < 0");
         }
         else throw new RuntimeException("annotation == null");
     }
 
-    public abstract void afterBindView();
+    public abstract void afterBindView() throws Exception;
 
     //view的依赖注入绑定
     private void bindView() {
         ButterKnife.bind(this);
     }
+
 }

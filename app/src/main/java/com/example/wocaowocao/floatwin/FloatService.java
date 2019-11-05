@@ -1,12 +1,10 @@
 package com.example.wocaowocao.floatwin;
 
 import android.annotation.SuppressLint;
-import android.app.Instrumentation;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -20,16 +18,22 @@ import androidx.annotation.Nullable;
 
 import com.example.wocaowocao.R;
 
+import java.io.DataOutputStream;
+
+
 
 public class FloatService extends Service {
-    private static final String TAG = "MyService";
 
+    static DataOutputStream os = null;
     //绑定的图片
     ImageView float_img;
     //布局参数.
     WindowManager.LayoutParams params;
     //实例化的WindowManager.
     WindowManager windowManager;
+    // 是否在录制
+    Boolean isRecording = false;
+
     private float x1,y1,x2,y2,mTouchCurrentX,mTouchCurrentY;
     private int lastX, lastY;
 
@@ -37,7 +41,11 @@ public class FloatService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "into MyService onCreate");
+        try {
+            os = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         createToucher();
     }
 
@@ -46,6 +54,8 @@ public class FloatService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
+
 
     @SuppressLint("ClickableViewAccessibility")
     private void createToucher() {
@@ -69,8 +79,6 @@ public class FloatService extends Service {
         params.width =200;// 设置悬浮窗口长宽数据
         params.height =200;
 
-
-
         float_img = new ImageView(this);
         float_img.setImageResource(R.color.colorPrimary);
 
@@ -93,7 +101,7 @@ public class FloatService extends Service {
                         params.x += mTouchCurrentX - lastX;
                         params.y += mTouchCurrentY - lastY;
                         windowManager.updateViewLayout(float_img, params);
-                        lastX = (int) mTouchCurrentX;
+                        lastX = (int)mTouchCurrentX;
                         lastY = (int)mTouchCurrentY;
                         break;
                     case MotionEvent.ACTION_UP:
@@ -102,8 +110,19 @@ public class FloatService extends Service {
                         double distance = Math.sqrt(Math.abs(x1-x2)*Math.abs(x1-x2)+Math.abs(y1-y2)*Math.abs(y1-y2));//两点之间的距离
                         Log.i("i", "x1 - x2>>>>>>"+ distance);
                         if (distance < 15) { // 距离较小，当作click事件来处理
-                            Toast.makeText(getBaseContext(), "点了", Toast.LENGTH_SHORT).show();
-                            return false;
+                            if(!isRecording)
+                            {
+                                Toast.makeText(getBaseContext(), "开始录制", Toast.LENGTH_SHORT).show();
+                                startService(new Intent(FloatService.this, TouchgetService.class));
+                                isRecording = true;
+                            }
+                            else
+                            {
+                                Toast.makeText(getBaseContext(), "录制结束", Toast.LENGTH_SHORT).show();
+                                float_img.setEnabled(false);
+                                isRecording = false;
+                            }
+                            return true;
                         } else {
                             Toast.makeText(getBaseContext(), "滑了", Toast.LENGTH_SHORT).show();
                             return true ;
@@ -112,12 +131,15 @@ public class FloatService extends Service {
                 return false;
             }
         });
-
     }
 
 
-
-
+    @Override
+    public void onDestroy() {
+        float_img.setEnabled(false);
+        windowManager.removeView(float_img);
+        super.onDestroy();
+    }
 }
 
 

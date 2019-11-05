@@ -1,30 +1,23 @@
 package com.example.wocaowocao.floatwin;
 
 
-import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
-
 import com.example.wocaowocao.Base.BaseActivity;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.Base.ViewInject;
-
 import butterknife.BindView;
 
 
 
 @ViewInject(main_layout_id = R.layout.activity_floatwin)
 public class floatwinActivity extends BaseActivity {
-
-
+    // 是否在录制
+    Boolean isplaying = false;
     @BindView(R.id.select_btn1)
     Button selectBtn1;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,21 +26,19 @@ public class floatwinActivity extends BaseActivity {
 
     @Override
     public void afterBindView() {
-
-
         selectBtn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Intent intent = new Intent(floatwinActivity.this, FloatService.class);
-                    startService(intent);
-
-
+                if(isplaying)
+                {
+                    stopService(new Intent(floatwinActivity.this, FloatService.class));
+                    isplaying=false;
+                }
+                else {
+                    startService(new Intent(floatwinActivity.this, FloatService.class));
+                    isplaying=true;
+                }
             }
         });
     }
-
-
-
-
-
 }

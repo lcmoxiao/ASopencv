@@ -26,6 +26,8 @@
         <activity android:name=".recogImg.recogImgActivity" />
         <activity android:name=".floatwin.floatwinActivity" />
         <service android:name=".floatwin.FloatService" />
+        <service android:name=".floatwin.TouchgetService" />
+
     </application>
 
 </manifest>
