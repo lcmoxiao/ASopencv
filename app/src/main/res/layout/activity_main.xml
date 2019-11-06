@@ -21,14 +21,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/floatwin" />
+        android:text="@string/recording" />
 
     <Button
         android:id="@+id/select_btn3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/test" />
+        android:text="@string/simulate" />
 
 
 </LinearLayout>

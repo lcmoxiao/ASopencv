@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,9 +20,6 @@ import com.example.wocaowocao.Base.BaseActivity;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.Base.ViewInject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import butterknife.BindView;
@@ -79,33 +75,20 @@ public class recogImgActivity extends BaseActivity {
         processBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(useOpencv.HashCompare(Bp1, Bp2))
+                if(useOpencv.NewCompare(Bp1, Bp2))
                     Toast.makeText(getBaseContext(),"真像",Toast.LENGTH_LONG).show();
                 else
-                    Toast.makeText(getBaseContext(),"像个屁",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(),"不像",Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void select1Image(String path) {
-        try {
-            File f = new File(path, "home.png");
-            Bp1 = BitmapFactory.decodeStream(new FileInputStream(f));
-            ImageView1.setImageBitmap(Bp1);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        startActivityForResult(Intent.createChooser(new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT), "选择图像..."), 1);
     }
 
     private void select2Image(String path) {
-        try {
-            File f = new File(path, "temp.png");
-            Bp2 = BitmapFactory.decodeStream(new FileInputStream(f));
-            ImageView2.setImageBitmap(Bp2);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        //startActivityForResult(Intent.createChooser(new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT), "选择图像..."), 2);
+        startActivityForResult(Intent.createChooser(new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT), "选择图像..."), 2);
     }
 
     @Override
@@ -114,19 +97,15 @@ public class recogImgActivity extends BaseActivity {
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try {
-                Log.d("image-tag", "start to decode selected image now...");
                 InputStream input = getContentResolver().openInputStream(uri);
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeStream(input, null, options);
-
                 options.inSampleSize = 2;
                 options.inJustDecodeBounds = false;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bp1 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, options);
-
                 ImageView1.setImageBitmap(Bp1);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -134,20 +113,15 @@ public class recogImgActivity extends BaseActivity {
         if (requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try {
-                Log.d("image-tag", "start to decode selected image now...");
                 InputStream input = getContentResolver().openInputStream(uri);
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeStream(input, null, options);
-
-
                 options.inSampleSize = 2;
                 options.inJustDecodeBounds = false;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bp2 = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, options);
-
                 ImageView2.setImageBitmap(Bp2);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

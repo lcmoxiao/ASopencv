@@ -4,31 +4,21 @@ package com.example.wocaowocao;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
 import com.example.wocaowocao.Base.BaseActivity;
 import com.example.wocaowocao.Base.ViewInject;
-import com.example.wocaowocao.floatwin.floatwinActivity;
 import com.example.wocaowocao.recogImg.recogImgActivity;
+import com.example.wocaowocao.recordservice.rFloatService;
+import com.example.wocaowocao.simulateservice.sFloatService;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 
 import butterknife.BindView;
 
@@ -43,12 +33,15 @@ public class MainActivity extends BaseActivity {
     LinearLayout mLayout;
     @BindView(R.id.select_btn3)
     Button selectBtn3;
+    // 是否打开录制悬浮窗
+    Boolean isrFloating = false;
+    // 是否打开模拟悬浮窗
+    Boolean issFloating = false;
 
     @Override
-    public void afterBindView() throws Exception {
+    public void afterBindView()  {
         initClick();
         initPermission();
-        initFile();
     }
 
     void initClick() {
@@ -61,41 +54,36 @@ public class MainActivity extends BaseActivity {
         selectBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, floatwinActivity.class));
+                if(isrFloating)
+                {
+                    stopService(new Intent(MainActivity.this, rFloatService.class));
+                    isrFloating=false;
+                }
+                else {
+                    startService(new Intent(MainActivity.this, rFloatService.class));
+                    isrFloating=true;
+                }
             }
         });
         selectBtn3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-
-
+                if(issFloating)
+                {
+                    stopService(new Intent(MainActivity.this, sFloatService.class));
+                    issFloating=false;
+                }
+                else {
+                    startService(new Intent(MainActivity.this, sFloatService.class));
+                    issFloating=true;
+                }
 
 
             }
         });
     }
 
-    // 初始化目录
-    private void initFile() throws Exception {
-        File f1 = new File(CMD.dataPath);
-        if (!f1.exists()) {
-            if (!f1.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f2 = new File(CMD.dataPath + "MOV1");
-        if (!f2.exists()) {
-            if (!f2.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f3 = new File(CMD.dataPath + "MOV1/images");
-        if (!f3.exists()) {
-            if (!f3.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f4 = new File(CMD.dataPath, "MOV1/gesture.txt");
-        if (!f4.exists()) {
-            if (!f4.createNewFile()) throw new Exception("你创建不了文件");
-        }
-    }
+
 
     // 初始化权限
         private void initPermission() {

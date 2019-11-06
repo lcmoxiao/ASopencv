@@ -4,4 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorClear">#00ffffff</color>
+    <color name="colorClear1">#4D66F381</color>
+    <color name="colorRecording">#8BC34A</color>
+    <color name="colorSimulate">#FFC107</color>
 </resources>

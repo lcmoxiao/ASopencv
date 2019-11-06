@@ -24,9 +24,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".recogImg.recogImgActivity" />
-        <activity android:name=".floatwin.floatwinActivity" />
-        <service android:name=".floatwin.FloatService" />
-        <service android:name=".floatwin.TouchgetService" />
+        <service android:name=".recordservice.rFloatService" />
+        <service android:name=".recordservice.TouchgetService" />
+        <service android:name=".simulateservice.sFloatService" />
 
     </application>
 
