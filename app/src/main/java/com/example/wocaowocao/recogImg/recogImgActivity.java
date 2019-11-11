@@ -2,8 +2,11 @@ package com.example.wocaowocao.recogImg;
 
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -61,6 +64,7 @@ public class recogImgActivity extends BaseActivity {
 
     }
 
+    volatile boolean s = true;
     public void imgRecognition()
     {
         useOpencv.staticLoadCVLibraries();
@@ -73,7 +77,25 @@ public class recogImgActivity extends BaseActivity {
         selectBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CMD.Shot(0);
+                Intent intent = new Intent();
+                intent.setAction("shot");
+                intent.putExtra("motivationNub",0);
+                sendBroadcast(intent);
+                BroadcastReceiver receiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        s= false;
+                    }
+                };
+                IntentFilter intentFilter = new IntentFilter();
+                intentFilter.addAction("finishShot");
+                registerReceiver(receiver,intentFilter);
+
+                while(s){ Log.e("xxx","?"); }
+                Log.e("xxx","finish");
+                unregisterReceiver(receiver);
+                Bp2 = CMD.screen;
+                ImageView2.setImageBitmap(Bp2);
             }
         });
         processBtn.setOnClickListener(new View.OnClickListener() {

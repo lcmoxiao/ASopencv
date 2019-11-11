@@ -3,6 +3,7 @@ package com.example.wocaowocao.recordservice;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -40,6 +41,7 @@ public class RecordService extends Service {
     //实例化的WindowManager.
     WindowManager windowManager;
     private float x,y;
+
 
 
 

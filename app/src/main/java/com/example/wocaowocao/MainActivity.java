@@ -3,8 +3,10 @@ package com.example.wocaowocao;
 
 import android.Manifest;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +30,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Objects;
 
 import butterknife.BindView;
 
@@ -57,6 +60,10 @@ public class MainActivity extends BaseActivity {
     // 是否打开模拟悬浮窗
     Boolean issFloating = false;
 
+    BroadcastReceiver receiver ;
+
+    IntentFilter intentfilter;
+
 
     @Override
     public void afterBindView()  {
@@ -64,7 +71,7 @@ public class MainActivity extends BaseActivity {
         initPermission();
         useOpencv.staticLoadCVLibraries();
         initFloatParams();
-
+        initFilter();
     }
 
     void initClick() {
@@ -113,7 +120,7 @@ public class MainActivity extends BaseActivity {
         selectBtn5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap = null;
+                Bitmap bitmap ;
                 try {
 
                     long startTime=System.currentTimeMillis();
@@ -137,18 +144,37 @@ public class MainActivity extends BaseActivity {
 
 
 
+    private void initFilter()
+    {
+        Intent intent = new Intent();
+        intent.setAction("finishShot");
 
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                try {
+                    CMD.screen = CMD.Shot11(getWindow().getDecorView(), Objects.requireNonNull(intent.getExtras()).getInt("motivationNub"));
+                    sendBroadcast(intent);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        intentfilter = new IntentFilter();
+        intentfilter.addAction("shot");
+        registerReceiver(receiver,intentfilter);
+    }
 
 
 
 
     // 初始化权限
     private void initPermission() {
+        getPermission(Manifest.permission.SYSTEM_ALERT_WINDOW);
+        getPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
         try (DataOutputStream os = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream())){
             exec("\"chmod 777 \"+getPackageCodePath()", os);
         } catch (Exception e) { e.printStackTrace(); }
-        getPermission(Manifest.permission.SYSTEM_ALERT_WINDOW);
-        getPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     //获取读写的权限
@@ -167,5 +193,13 @@ public class MainActivity extends BaseActivity {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, 67);
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+
+
     }
 }

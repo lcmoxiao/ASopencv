@@ -39,6 +39,9 @@ public class CMD {
     public static WindowManager.LayoutParams floatParams;
     //录制动作标号
     public static int motivationNub = 1;
+    //临时截屏
+    public static Bitmap screen;
+
 
     private static OutputStream writeOS = null;
     private static PrintWriter pw=null;
@@ -100,10 +103,9 @@ public class CMD {
 
 
 
-    public static Bitmap Shot11(View view,int MotivationNub) throws FileNotFoundException {
+    static Bitmap Shot11(View view, int MotivationNub) throws FileNotFoundException {
 
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
-                view.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         view.draw(canvas);
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dataPath+"MOV1/images/"+MotivationNub+".png")) );
