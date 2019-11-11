@@ -30,5 +30,11 @@
         android:layout_gravity="center"
         android:text="@string/simulate" />
 
+    <Button
+        android:id="@+id/select_btn4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/clearfile" />
 
 </LinearLayout>

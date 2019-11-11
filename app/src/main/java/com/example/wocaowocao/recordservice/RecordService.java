@@ -19,34 +19,58 @@ import androidx.annotation.Nullable;
 import com.example.wocaowocao.CMD;
 import com.example.wocaowocao.R;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 
-public class TouchgetService extends Service {
+public class RecordService extends Service {
 
 
     //绑定的图片
-    ImageView float_img;
+    static ImageView record_img;
     //布局参数.
-    WindowManager.LayoutParams params;
+    static WindowManager.LayoutParams params;
     //实例化的WindowManager.
-    WindowManager windowManager;
+    static WindowManager windowManager;
     private float x,y;
     //动作标号
     int motivationNub = 1;
+    Thread t=Thread.currentThread();
 
     @Override
     public void onCreate() {
         super.onCreate();
         try {
-            createToucher();
-            startService(new Intent(TouchgetService.this, rFloatService.class));
+            try {
+                initWriteFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             CMD.WriteIGInit();
+            createToucher();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // 初始化目录
+    private void initWriteFile() throws Exception {
+        File f1 = new File(CMD.dataPath);
+        if (!f1.exists()) {
+            if (!f1.mkdirs()) throw new Exception("你创建不了文件夹");
+        }
+        File f2 = new File(CMD.dataPath + "MOV1");
+        if (!f2.exists()) {
+            if (!f2.mkdirs()) throw new Exception("你创建不了文件夹");
+        }
+        File f3 = new File(CMD.dataPath + "MOV1/images");
+        if (!f3.exists()) {
+            if (!f3.mkdirs()) throw new Exception("你创建不了文件夹");
+        }
+        File f4 = new File(CMD.dataPath, "MOV1/gesture.txt");
+        if (!f4.exists()) {
+            if (!f4.createNewFile()) throw new Exception("你创建不了文件");
+        }
+    }
 
     @Nullable
     @Override
@@ -77,40 +101,35 @@ public class TouchgetService extends Service {
         params.width =getResources().getDisplayMetrics().widthPixels;// 设置悬浮窗口长宽数据
         params.height =getResources().getDisplayMetrics().heightPixels+200;
 
-        float_img = new ImageView(this);
-        float_img.setImageResource(R.color.colorClear);
-        windowManager.addView(float_img, params);
-        //刷新上层悬浮窗权限
-        rFloatService.windowManager.removeView(rFloatService.float_img);
-        rFloatService.windowManager.addView(rFloatService.float_img, rFloatService.params);
-        float_img.setOnTouchListener(new OnTouchListener() {
+        record_img = new ImageView(this);
+        record_img.setImageResource(R.color.colorClear);
+
+
+        windowManager.addView(record_img, params);
+
+        record_img.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
                 if (action == MotionEvent.ACTION_DOWN){
+
+                    //点到之后，会进行截图和记录触点，为了保证截图效果，会延时0.5s。
+                    //之后解除view，等待操作。
+                    x = event.getRawX();//得到相对应屏幕左上角的坐标
+                    y = event.getRawY();
+                    //记录动作
+                    CMD.Shot(motivationNub);
+                    CMD.WriteGesture((int) x, (int) y, motivationNub);
                     try {
-                        //设置图像失效
-                        windowManager.removeView(float_img);
-                        windowManager.updateViewLayout(float_img, params);
-                        x = event.getRawX();//得到相对应屏幕左上角的坐标
-                        y = event.getRawY();
-                        //记录动作
-                        CMD.Shot(motivationNub);
-                        CMD.WriteGesture((int) x, (int) y, motivationNub);
-                        //记录触点
-                        motivationNub++;
-                        Toast.makeText(getBaseContext(), "MOV"+motivationNub+"录制成功"+x+","+y, Toast.LENGTH_SHORT).show();
-                        Thread.sleep(80);
-                        {
-                            windowManager.addView(float_img, params);
-                            //刷新上层悬浮窗权限
-                            rFloatService.windowManager.removeView(rFloatService.float_img);
-                            rFloatService.windowManager.addView(rFloatService.float_img, rFloatService.params);
-                        }
-                        return true;
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    windowManager.removeView(record_img);
+                    rFloatService.float_img.setImageResource(R.color.colorPrimary);
+                    rFloatService.windowManager.updateViewLayout(rFloatService.float_img,rFloatService.params);
+                    motivationNub++;
+                    return true;
                 }
                 return false;
             }
@@ -120,8 +139,7 @@ public class TouchgetService extends Service {
     @Override
     public void onDestroy() {
         try {
-            float_img.setEnabled(false);
-            windowManager.removeView(float_img);
+            record_img.setEnabled(false);
             CMD.WriteIGDestroy();
         } catch (IOException e) {
             e.printStackTrace();

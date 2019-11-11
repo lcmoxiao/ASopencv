@@ -33,6 +33,9 @@ public class MainActivity extends BaseActivity {
     LinearLayout mLayout;
     @BindView(R.id.select_btn3)
     Button selectBtn3;
+    @BindView(R.id.select_btn4)
+    Button selectBtn4;
+
     // 是否打开录制悬浮窗
     Boolean isrFloating = false;
     // 是否打开模拟悬浮窗
@@ -65,6 +68,7 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
+
         selectBtn3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,8 +81,12 @@ public class MainActivity extends BaseActivity {
                     startService(new Intent(MainActivity.this, sFloatService.class));
                     issFloating=true;
                 }
-
-
+            }
+        });
+        selectBtn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CMD.delFile(CMD.dataPath+"MOV1");
             }
         });
     }

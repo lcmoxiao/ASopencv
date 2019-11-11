@@ -25,8 +25,9 @@
         </activity>
         <activity android:name=".recogImg.recogImgActivity" />
         <service android:name=".recordservice.rFloatService" />
-        <service android:name=".recordservice.TouchgetService" />
+        <service android:name=".recordservice.RecordService" />
         <service android:name=".simulateservice.sFloatService" />
+        <service android:name=".simulateservice.SimulateService" />
 
     </application>
 

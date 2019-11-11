@@ -39,11 +39,7 @@ public class rFloatService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        try {
-            initWriteFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         createToucher();
     }
 
@@ -53,25 +49,7 @@ public class rFloatService extends Service {
         return null;
     }
 
-    // 初始化目录
-    private void initWriteFile() throws Exception {
-        File f1 = new File(CMD.dataPath);
-        if (!f1.exists()) {
-            if (!f1.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f2 = new File(CMD.dataPath + "MOV1");
-        if (!f2.exists()) {
-            if (!f2.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f3 = new File(CMD.dataPath + "MOV1/images");
-        if (!f3.exists()) {
-            if (!f3.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f4 = new File(CMD.dataPath, "MOV1/gesture.txt");
-        if (!f4.exists()) {
-            if (!f4.createNewFile()) throw new Exception("你创建不了文件");
-        }
-    }
+
 
     @SuppressLint("ClickableViewAccessibility")
     private void createToucher() {
@@ -92,8 +70,8 @@ public class rFloatService extends Service {
                     case MotionEvent.ACTION_MOVE:
                         mTouchCurrentX = (int) event.getRawX();
                         mTouchCurrentY = (int) event.getRawY();
-                        CMD.paramX = params.x += mTouchCurrentX - lastX;
-                        CMD.paramY = params.y += mTouchCurrentY - lastY;
+                        CMD.RparamX = params.x += mTouchCurrentX - lastX;
+                        CMD.RparamY = params.y += mTouchCurrentY - lastY;
                         windowManager.updateViewLayout(float_img, params);
                         lastX = (int)mTouchCurrentX;
                         lastY = (int)mTouchCurrentY;
@@ -106,20 +84,30 @@ public class rFloatService extends Service {
                         if (distance < 15) { // 距离较小，当作click事件来处理
                             if(!CMD.isRecording)
                             {
-                                Toast.makeText(getBaseContext(), "开始录制", Toast.LENGTH_SHORT).show();
-                                startService(new Intent(rFloatService.this, TouchgetService.class));
+                                startService(new Intent(rFloatService.this, RecordService.class));
                                 CMD.isRecording = true;
                             }
                             else
                             {
-                                Toast.makeText(getBaseContext(), "录制结束", Toast.LENGTH_SHORT).show();
-                                stopService(new Intent(rFloatService.this, TouchgetService.class));
-                                CMD.isRecording = false;
+                                float_img.setImageResource(R.color.colorRecording);
+                                windowManager.updateViewLayout(float_img, params);
+                                RecordService.windowManager.addView(RecordService.record_img, RecordService.params);
                             }
                             return true;
                         } else {
-                            Toast.makeText(getBaseContext(), "滑了", Toast.LENGTH_SHORT).show();
-                            return true ;
+                            if(!CMD.isRecording)
+                            {
+                                Toast.makeText(getBaseContext(), "找个好位置", Toast.LENGTH_SHORT).show();
+                                return true ;
+                            }
+                            else
+                            {
+                                Toast.makeText(getBaseContext(), "结束录制", Toast.LENGTH_SHORT).show();
+                                float_img.setImageResource(R.color.colorRecording);
+                                windowManager.updateViewLayout(float_img, params);
+                                stopService(new Intent(rFloatService.this, RecordService.class));
+                                return true ;
+                            }
                         }
                 }
                 return false;
@@ -139,8 +127,8 @@ public class rFloatService extends Service {
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         //设置窗口初始停靠位置.
         params.gravity = Gravity.TOP | Gravity.START;
-        params.x =CMD.paramX;
-        params.y =CMD.paramY;
+        params.x =CMD.RparamX;
+        params.y =CMD.RparamY;
         //设置悬浮窗口长宽数据.
         params.width =100;// 设置悬浮窗口长宽数据
         params.height =100;

@@ -9,4 +9,5 @@
     <string name="test">test</string>
     <string name="recording">打开录制开关悬浮窗（ROOT！）</string>
     <string name="simulate">打开模拟操作悬浮窗（ROOT！）</string>
+    <string name="clearfile">清空文件</string>
 </resources>

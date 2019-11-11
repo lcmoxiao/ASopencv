@@ -42,36 +42,18 @@ public class sFloatService extends Service {
     //实例化的WindowManager.
     WindowManager windowManager;
 
-    //读取的动作位置
-    int imagesNub;
-    int[] xOP;
-    int[] yOP;
-    Bitmap[] bitmaps;
+
 
 
     private float x1,y1,x2,y2,mTouchCurrentX,mTouchCurrentY;
     private int lastX, lastY;
-    private boolean isPlaying = false;
+
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-        try {
-            CMD.WriteIInit();
             createToucher();
-            useOpencv.staticLoadCVLibraries();
-
-            imagesNub = new File(CMD.dataPath + "MOV1/images").listFiles().length-1;
-            xOP = new int [imagesNub];
-            yOP = new int [imagesNub];
-            bitmaps = new Bitmap[imagesNub];
-            initxyOP();
-            initBitmaps();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Nullable
@@ -81,61 +63,11 @@ public class sFloatService extends Service {
     }
 
 
-    //初始化操作坐标
-    void initxyOP()
-    {
-        int motivationNub=0;
-        String [] str;
-        String line;
-        try {
-            while((line=br.readLine())!=null) {
-                str = line.split(",");
-                xOP[motivationNub] = Integer.parseInt(str[1]);
-                yOP[motivationNub] = Integer.parseInt(str[2]);
-                motivationNub++;
-            }
-            Toast.makeText(getBaseContext(), "初始化操作库完毕", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //初始化操作图库
-    void initBitmaps() {
-        for (int i = 0; i <= imagesNub; i++)
-        {
-            try {
-                bitmaps[i] = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV1/images/", i + ".png")));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        Toast.makeText(getBaseContext(), "初始化图库完毕", Toast.LENGTH_SHORT).show();
-    }
 
 
-    void clickOP() throws FileNotFoundException, InterruptedException {
-        for (int i = 0; i <= imagesNub;) {
-            CMD.Shot(0);
 
 
-            Thread.sleep(800);
-            Bitmap screen = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV1/images/" , 0 + ".png")));
-            Log.e("fuck","尝试"+(i+1)+"的动作");
-            if(screen==null)
-            {
-                Log.e("fuck","获取"+(i+1)+"的动作截图失败");
-            }
-            else
-            {
-                if(useOpencv.NewCompare(screen, bitmaps[i]))
-                {
-                CMD.simulateClick(xOP[i], yOP[i], execOS);
-                i++;
-                }
-            }
-        }
-    }
+
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -155,8 +87,8 @@ public class sFloatService extends Service {
                     case MotionEvent.ACTION_MOVE:
                         mTouchCurrentX = (int) event.getRawX();
                         mTouchCurrentY = (int) event.getRawY();
-                        CMD.paramX = params.x += mTouchCurrentX - lastX;
-                        CMD.paramY = params.y += mTouchCurrentY - lastY;
+                        CMD.SparamX = params.x += mTouchCurrentX - lastX;
+                        CMD.SparamY = params.y += mTouchCurrentY - lastY;
                         windowManager.updateViewLayout(float_img, params);
                         lastX = (int)mTouchCurrentX;
                         lastY = (int)mTouchCurrentY;
@@ -166,13 +98,17 @@ public class sFloatService extends Service {
                         y2 = event.getRawY();
                         double distance = Math.sqrt(Math.abs(x1-x2)*Math.abs(x1-x2)+Math.abs(y1-y2)*Math.abs(y1-y2));//两点之间的距离
                         if (distance < 15) { // 距离较小，当作click事件来处理
-
-                                try {
-                                    clickOP();
-                                } catch (FileNotFoundException | InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-
+                            if(!CMD.isSimulating){
+                                CMD.isSimulating = true;
+                                startService(new Intent(sFloatService.this,SimulateService.class));
+                                Toast.makeText(getBaseContext(), "开始模拟", Toast.LENGTH_SHORT).show();
+                            }
+                            else
+                            {
+                                CMD.isSimulating = false;
+                                stopService(new Intent(sFloatService.this,SimulateService.class));
+                                Toast.makeText(getBaseContext(), "强制终止模拟", Toast.LENGTH_SHORT).show();
+                            }
                             return true;
                         } else {
                             Toast.makeText(getBaseContext(), "一定要选个好位置", Toast.LENGTH_SHORT).show();
@@ -197,25 +133,20 @@ public class sFloatService extends Service {
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         //设置窗口初始停靠位置.
         params.gravity = Gravity.TOP | Gravity.START;
-        params.x =CMD.paramX;
-        params.y =CMD.paramY;
+        params.x =CMD.SparamX;
+        params.y =CMD.SparamY;
         //设置悬浮窗口长宽数据.
         params.width =100;// 设置悬浮窗口长宽数据
         params.height =100;
         float_img = new ImageView(this);
-        float_img.setImageResource(R.color.colorSimulate);
+        float_img.setImageResource(R.color.colorRecording);
         windowManager.addView(float_img, params);
     }
 
     @Override
     public void onDestroy() {
-        try {
-            float_img.setEnabled(false);
-            windowManager.removeView(float_img);
-            CMD.WriteIDestroy();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        float_img.setEnabled(false);
+        windowManager.removeView(float_img);
         super.onDestroy();
     }
 }

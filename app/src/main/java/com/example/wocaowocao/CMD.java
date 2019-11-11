@@ -20,8 +20,12 @@ public class CMD {
     public static String dataPath = rootPath+"1test/";
     // 是否在录制
     public static Boolean isRecording = false;
+    //是否在模拟操作
+    public static Boolean isSimulating = false;
     //悬浮窗的位置
-    public static int paramX =980, paramY =2057;
+    public static int RparamX =980, RparamY =1024;
+    //悬浮窗的位置
+    public static int SparamX =980, SparamY =1024;
 
     private static OutputStream writeOS = null;
     private static PrintWriter pw=null;
@@ -81,6 +85,10 @@ public class CMD {
         exec("screencap -p "+dataPath+"MOV1/images/"+MotivationNub+".png", execOS);
     }
 
+
+
+
+
     /**
      * 写入手势,需要先WriteInit()，之后不要忘记WriteDestroy()
      *
@@ -91,6 +99,47 @@ public class CMD {
     public static void WriteGesture(int x,int y,int MotivationNub){
         String s=MotivationNub+","+x+","+y;
         pw.println(s);
+    }
+
+    /**
+     *  删除文件
+     *
+     * @param file 文件
+     *
+     */
+    static boolean delFile(File file) {
+        if (!file.exists()) {
+            return false;
+        }
+
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File f : files) {
+                delFile(f);
+            }
+        }
+        return file.delete();
+    }
+
+    /**
+     *  删除文件
+     *
+     * @param path 文件路径
+     *
+     */
+    static boolean delFile(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return false;
+        }
+
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File f : files) {
+                delFile(f);
+            }
+        }
+        return file.delete();
     }
 
 
