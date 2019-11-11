@@ -29,16 +29,16 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="378dp"
+        android:layout_width="380dp"
         android:layout_height="240dp"
+        android:contentDescription="@string/todo"
         android:scaleType="fitCenter"
-        android:src="@mipmap/ic_launcher"
-        android:contentDescription="@string/todo" />
+        android:src="@mipmap/ic_launcher" />
 
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="380dp"
-        android:layout_height="237dp"
+        android:layout_height="240dp"
         android:scaleType="fitCenter"
         android:src="@mipmap/ic_launcher"
         android:contentDescription="@string/todo" />

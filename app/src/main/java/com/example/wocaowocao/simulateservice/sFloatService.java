@@ -4,11 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import android.os.IBinder;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,15 +18,6 @@ import androidx.annotation.Nullable;
 
 import com.example.wocaowocao.CMD;
 import com.example.wocaowocao.R;
-import com.example.wocaowocao.recogImg.useOpencv;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import static com.example.wocaowocao.CMD.br;
-import static com.example.wocaowocao.CMD.execOS;
 
 
 public class sFloatService extends Service {
@@ -37,13 +25,8 @@ public class sFloatService extends Service {
 
     //绑定的图片
     ImageView float_img;
-    //布局参数.
-    WindowManager.LayoutParams params;
     //实例化的WindowManager.
     WindowManager windowManager;
-
-
-
 
     private float x1,y1,x2,y2,mTouchCurrentX,mTouchCurrentY;
     private int lastX, lastY;
@@ -87,9 +70,9 @@ public class sFloatService extends Service {
                     case MotionEvent.ACTION_MOVE:
                         mTouchCurrentX = (int) event.getRawX();
                         mTouchCurrentY = (int) event.getRawY();
-                        CMD.SparamX = params.x += mTouchCurrentX - lastX;
-                        CMD.SparamY = params.y += mTouchCurrentY - lastY;
-                        windowManager.updateViewLayout(float_img, params);
+                        CMD.SparamX = CMD.floatParams.x += mTouchCurrentX - lastX;
+                        CMD.SparamY = CMD.floatParams.y += mTouchCurrentY - lastY;
+                        windowManager.updateViewLayout(float_img, CMD.floatParams);
                         lastX = (int)mTouchCurrentX;
                         lastY = (int)mTouchCurrentY;
                         break;
@@ -101,6 +84,8 @@ public class sFloatService extends Service {
                             if(!CMD.isSimulating){
                                 CMD.isSimulating = true;
                                 startService(new Intent(sFloatService.this,SimulateService.class));
+                                float_img.setImageResource(R.color.colorExecuting);
+                                windowManager.updateViewLayout(float_img, CMD.floatParams);
                                 Toast.makeText(getBaseContext(), "开始模拟", Toast.LENGTH_SHORT).show();
                             }
                             else
@@ -123,24 +108,11 @@ public class sFloatService extends Service {
 
     void initWindow(){
         windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
-        //赋值WindowManager&LayoutParam.
-        params = new WindowManager.LayoutParams();
-        //设置type.系统提示型窗口，一般都在应用程序窗口之上.
-        params.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-        //设置效果为背景透明.
-        //params.format = PixelFormat.RGBA_8888;
-        //设置flags.不可聚焦及不可使用按钮对悬浮窗进行操控.
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        //设置窗口初始停靠位置.
-        params.gravity = Gravity.TOP | Gravity.START;
-        params.x =CMD.SparamX;
-        params.y =CMD.SparamY;
-        //设置悬浮窗口长宽数据.
-        params.width =100;// 设置悬浮窗口长宽数据
-        params.height =100;
+        //赋值WindowManager
+
         float_img = new ImageView(this);
-        float_img.setImageResource(R.color.colorRecording);
-        windowManager.addView(float_img, params);
+        float_img.setImageResource(R.color.colorSimulateWait);
+        windowManager.addView(float_img, CMD.floatParams);
     }
 
     @Override

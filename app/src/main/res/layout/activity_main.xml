@@ -7,13 +7,12 @@
     android:orientation="vertical"
     tools:context="com.example.wocaowocao.MainActivity">
 
-
     <Button
         android:id="@+id/select_btn1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="250dp"
         android:text="@string/recogimg" />
 
     <Button
@@ -35,6 +34,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/clearfile" />
+        android:text="@string/delfile" />
+
+    <Button
+        android:id="@+id/select_btn5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/FileManager" />
 
 </LinearLayout>

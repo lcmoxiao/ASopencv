@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -19,17 +18,14 @@ import androidx.annotation.Nullable;
 import com.example.wocaowocao.CMD;
 import com.example.wocaowocao.R;
 
-import java.io.File;
 
 
 public class rFloatService extends Service {
 
     //绑定的图片
-    static ImageView float_img;
-    //布局参数.
-    static WindowManager.LayoutParams params;
+    ImageView float_img;
     //实例化的WindowManager.
-    static WindowManager windowManager;
+    WindowManager windowManager;
 
 
     private float x1,y1,x2,y2,mTouchCurrentX,mTouchCurrentY;
@@ -39,7 +35,6 @@ public class rFloatService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
         createToucher();
     }
 
@@ -48,7 +43,12 @@ public class rFloatService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
+    void initWindow(){
+        windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
+        float_img = new ImageView(this);
+        float_img.setImageResource(R.color.colorRecordingWait);
+        windowManager.addView(float_img, CMD.floatParams);
+    }
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -70,9 +70,9 @@ public class rFloatService extends Service {
                     case MotionEvent.ACTION_MOVE:
                         mTouchCurrentX = (int) event.getRawX();
                         mTouchCurrentY = (int) event.getRawY();
-                        CMD.RparamX = params.x += mTouchCurrentX - lastX;
-                        CMD.RparamY = params.y += mTouchCurrentY - lastY;
-                        windowManager.updateViewLayout(float_img, params);
+                        CMD.RparamX = CMD.floatParams.x += mTouchCurrentX - lastX;
+                        CMD.RparamY = CMD.floatParams.y += mTouchCurrentY - lastY;
+                        windowManager.updateViewLayout(float_img, CMD.floatParams);
                         lastX = (int)mTouchCurrentX;
                         lastY = (int)mTouchCurrentY;
                         break;
@@ -82,30 +82,32 @@ public class rFloatService extends Service {
                         double distance = Math.sqrt(Math.abs(x1-x2)*Math.abs(x1-x2)+Math.abs(y1-y2)*Math.abs(y1-y2));//两点之间的距离
                         Log.i("i", "x1 - x2>>>>>>"+ distance);
                         if (distance < 15) { // 距离较小，当作click事件来处理
-                            if(!CMD.isRecording)
-                            {
-                                startService(new Intent(rFloatService.this, RecordService.class));
+                            if(!CMD.isRecording) {
+                                //点击后开始录制
                                 CMD.isRecording = true;
-                            }
-                            else
-                            {
-                                float_img.setImageResource(R.color.colorRecording);
-                                windowManager.updateViewLayout(float_img, params);
-                                RecordService.windowManager.addView(RecordService.record_img, RecordService.params);
-                            }
-                            return true;
-                        } else {
-                            if(!CMD.isRecording)
-                            {
-                                Toast.makeText(getBaseContext(), "找个好位置", Toast.LENGTH_SHORT).show();
-                                return true ;
-                            }
-                            else
-                            {
-                                Toast.makeText(getBaseContext(), "结束录制", Toast.LENGTH_SHORT).show();
-                                float_img.setImageResource(R.color.colorRecording);
-                                windowManager.updateViewLayout(float_img, params);
+                                startService(new Intent(rFloatService.this, RecordService.class));
+                                //更新执行颜色
+                                float_img.setImageResource(R.color.colorExecuting);
+                                windowManager.updateViewLayout(float_img, CMD.floatParams);
+                                Toast.makeText(getBaseContext(), "准备就绪", Toast.LENGTH_SHORT).show();
+                                return true;
+                            }else {
+                                Log.e("xxx", "下一次录制就绪");
                                 stopService(new Intent(rFloatService.this, RecordService.class));
+                                float_img.setImageResource(R.color.colorRecordingWait);
+                                windowManager.updateViewLayout(float_img, CMD.floatParams);
+                                startService(new Intent(rFloatService.this, RecordService.class));
+                            }
+                        } else {
+                            if(!CMD.isRecording) {
+                                Toast.makeText(getBaseContext(), "请找个好点的位置", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                CMD.isRecording = false;
+                                Toast.makeText(getBaseContext(), "录制结束", Toast.LENGTH_SHORT).show();
+                                stopService(new Intent(rFloatService.this, RecordService.class));
+                                float_img.setImageResource(R.color.colorRecordingWait);
+                                windowManager.updateViewLayout(float_img, CMD.floatParams);
                                 return true ;
                             }
                         }
@@ -115,27 +117,7 @@ public class rFloatService extends Service {
         });
     }
 
-    void initWindow(){
-        windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
-        //赋值WindowManager&LayoutParam.
-        params = new WindowManager.LayoutParams();
-        //设置type.系统提示型窗口，一般都在应用程序窗口之上.
-        params.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-        //设置效果为背景透明.
-        //params.format = PixelFormat.RGBA_8888;
-        //设置flags.不可聚焦及不可使用按钮对悬浮窗进行操控.
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        //设置窗口初始停靠位置.
-        params.gravity = Gravity.TOP | Gravity.START;
-        params.x =CMD.RparamX;
-        params.y =CMD.RparamY;
-        //设置悬浮窗口长宽数据.
-        params.width =100;// 设置悬浮窗口长宽数据
-        params.height =100;
-        float_img = new ImageView(this);
-        float_img.setImageResource(R.color.colorRecording);
-        windowManager.addView(float_img, params);
-    }
+
 
     @Override
     public void onDestroy() {

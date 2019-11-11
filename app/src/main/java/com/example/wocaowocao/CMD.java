@@ -1,6 +1,15 @@
 package com.example.wocaowocao;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
 import android.os.Environment;
+import android.view.Gravity;
+import android.view.View;
+import android.view.WindowManager;
+
+import org.opencv.features2d.Params;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -26,6 +35,10 @@ public class CMD {
     public static int RparamX =980, RparamY =1024;
     //悬浮窗的位置
     public static int SparamX =980, SparamY =1024;
+    //悬浮窗的参数
+    public static WindowManager.LayoutParams floatParams;
+    //录制动作标号
+    public static int motivationNub = 1;
 
     private static OutputStream writeOS = null;
     private static PrintWriter pw=null;
@@ -87,7 +100,15 @@ public class CMD {
 
 
 
+    public static Bitmap Shot11(View view,int MotivationNub) throws FileNotFoundException {
 
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
+                view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dataPath+"MOV1/images/"+MotivationNub+".png")) );
+        return bitmap;
+    }
 
     /**
      * 写入手势,需要先WriteInit()，之后不要忘记WriteDestroy()
@@ -160,6 +181,7 @@ public class CMD {
         execOS = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream());
         writeOS = new FileOutputStream(CMD.dataPath+"MOV1/gesture.txt",true);
         pw=new PrintWriter(writeOS);
+        pw.flush();
     }
 
     public static void WriteIGDestroy() throws IOException {
@@ -168,6 +190,24 @@ public class CMD {
         execOS.close();
     }
 
+    static void initFloatParams() {
+        //赋值WindowManager&LayoutParam.
+        floatParams = new WindowManager.LayoutParams();
+        //设置type.系统提示型窗口，一般都在应用程序窗口之上.
+        floatParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        //设置效果为背景透明.
+        floatParams.format = PixelFormat.RGBA_8888;
+        //设置flags.不可聚焦及不可使用按钮对悬浮窗进行操控.
+        floatParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
+        //设置窗口初始停靠位置.
+        floatParams.gravity = Gravity.TOP | Gravity.START;
+        floatParams.x = RparamX;
+        floatParams.y = RparamY;
+
+        //设置悬浮窗口长宽数据.
+        floatParams.width = 100;// 设置悬浮窗口长宽数据
+        floatParams.height = 100;
+    }
 
 }

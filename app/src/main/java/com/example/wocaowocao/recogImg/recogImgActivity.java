@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,9 +18,11 @@ import android.widget.Toast;
 
 
 import com.example.wocaowocao.Base.BaseActivity;
+import com.example.wocaowocao.CMD;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.Base.ViewInject;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import butterknife.BindView;
@@ -55,6 +58,7 @@ public class recogImgActivity extends BaseActivity {
 
         imgRecognition();
 
+
     }
 
     public void imgRecognition()
@@ -63,31 +67,33 @@ public class recogImgActivity extends BaseActivity {
         selectBtn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                select1Image(imgPath);
+                select1Image();
             }
         });
         selectBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                select2Image(imgPath);
+                CMD.Shot(0);
             }
         });
         processBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(useOpencv.NewCompare(Bp1, Bp2))
                     Toast.makeText(getBaseContext(),"真像",Toast.LENGTH_LONG).show();
                 else
                     Toast.makeText(getBaseContext(),"不像",Toast.LENGTH_LONG).show();
+
             }
         });
     }
 
-    private void select1Image(String path) {
+    private void select1Image() {
         startActivityForResult(Intent.createChooser(new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT), "选择图像..."), 1);
     }
 
-    private void select2Image(String path) {
+    private void select2Image() {
         startActivityForResult(Intent.createChooser(new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT), "选择图像..."), 2);
     }
 

@@ -24,6 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".recogImg.recogImgActivity" />
+        <activity android:name=".FileManager.fmanagerActivity" />
+
         <service android:name=".recordservice.rFloatService" />
         <service android:name=".recordservice.RecordService" />
         <service android:name=".simulateservice.sFloatService" />

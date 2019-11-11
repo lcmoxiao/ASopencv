@@ -2,9 +2,15 @@ package com.example.wocaowocao;
 
 
 import android.Manifest;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -13,14 +19,22 @@ import androidx.core.app.ActivityCompat;
 import com.example.wocaowocao.Base.BaseActivity;
 import com.example.wocaowocao.Base.ViewInject;
 import com.example.wocaowocao.recogImg.recogImgActivity;
+import com.example.wocaowocao.recogImg.useOpencv;
 import com.example.wocaowocao.recordservice.rFloatService;
 import com.example.wocaowocao.simulateservice.sFloatService;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import butterknife.BindView;
+
+import static com.example.wocaowocao.CMD.dataPath;
+import static com.example.wocaowocao.CMD.delFile;
+import static com.example.wocaowocao.CMD.exec;
+import static com.example.wocaowocao.CMD.initFloatParams;
 
 
 @ViewInject(main_layout_id = R.layout.activity_main)
@@ -35,16 +49,22 @@ public class MainActivity extends BaseActivity {
     Button selectBtn3;
     @BindView(R.id.select_btn4)
     Button selectBtn4;
+    @BindView(R.id.select_btn5)
+    Button selectBtn5;
 
     // 是否打开录制悬浮窗
     Boolean isrFloating = false;
     // 是否打开模拟悬浮窗
     Boolean issFloating = false;
 
+
     @Override
     public void afterBindView()  {
         initClick();
         initPermission();
+        useOpencv.staticLoadCVLibraries();
+        initFloatParams();
+
     }
 
     void initClick() {
@@ -86,17 +106,46 @@ public class MainActivity extends BaseActivity {
         selectBtn4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CMD.delFile(CMD.dataPath+"MOV1");
+                delFile(dataPath+"MOV1");
             }
         });
+
+        selectBtn5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bitmap bitmap = null;
+                try {
+
+                    long startTime=System.currentTimeMillis();
+
+                    bitmap = BitmapFactory.decodeStream( new FileInputStream(new File(dataPath + "MOV1/images/", 1 + ".png")));
+                    Log.e("xx",  bitmap.getHeight()+"");
+                    Log.e("xx",  bitmap.getWidth()+"");
+
+                    long endTime=System.currentTimeMillis();
+                    Log.e("xx",  +(endTime - startTime)+"ms");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+
+
     }
 
 
 
+
+
+
+
+
     // 初始化权限
-        private void initPermission() {
+    private void initPermission() {
         try (DataOutputStream os = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream())){
-            CMD.exec("\"chmod 777 \"+getPackageCodePath()", os);
+            exec("\"chmod 777 \"+getPackageCodePath()", os);
         } catch (Exception e) { e.printStackTrace(); }
         getPermission(Manifest.permission.SYSTEM_ALERT_WINDOW);
         getPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -115,9 +164,8 @@ public class MainActivity extends BaseActivity {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, 67);
             } else {
                 Snackbar.make(mLayout, "你选择过了" + permission, Snackbar.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(this, new String[]{permission}, 67);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, 67);
             }
         }
     }
-
 }

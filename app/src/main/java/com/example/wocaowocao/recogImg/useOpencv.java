@@ -80,7 +80,7 @@ public class useOpencv {
 
     //像返回true，不想false。
     public static boolean NewCompare(Bitmap Bp1, Bitmap Bp2) {
-        int precision = 24;
+        int precision = 64;
         Mat src1 = new Mat();
         Mat dst1 = new Mat();
         Mat src2 = new Mat();
@@ -108,12 +108,12 @@ public class useOpencv {
                 int tmp1 = tmp + j;
                 data1[tmp1] = dst1.get(i, j);
                 data2[tmp1] = dst2.get(i, j);
-                if(abs(data1[tmp1][0]-data2[tmp1][0])>15)iDiffNum++;
+                if(abs(data1[tmp1][0]-data2[tmp1][0])>10)iDiffNum++;
             }
         }
         Log.e("xx", "有那么多处不同" +iDiffNum);
         //输出什么看个人喜好
-        return iDiffNum <= 15;
+        return iDiffNum <= 50;
     }
 
 

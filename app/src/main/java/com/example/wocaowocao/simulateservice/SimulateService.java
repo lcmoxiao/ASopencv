@@ -27,7 +27,7 @@ public class SimulateService extends Service {
     int[] yOP;
     Bitmap[] bitmaps;
     //循环和终止线程用的
-    int movnb = 0;
+    int motivationNub = 0;
 
     @Override
     public void onCreate() {
@@ -36,7 +36,6 @@ public class SimulateService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        useOpencv.staticLoadCVLibraries();
         imagesNub = new File(CMD.dataPath + "MOV1/images").listFiles().length-1;
         xOP = new int [imagesNub+1];
         yOP = new int [imagesNub+1];
@@ -98,7 +97,7 @@ public class SimulateService extends Service {
 
     void startSimulate() throws FileNotFoundException {
         int nub=0;
-        while (movnb < imagesNub) {
+        while (motivationNub < imagesNub) {
             CMD.Shot(0);
             try {
                 synchronized (t) {
@@ -113,13 +112,13 @@ public class SimulateService extends Service {
             if (screen != null) {
 
                 try{
-                if (useOpencv.NewCompare(screen, bitmaps[movnb])) {
-                    Log.e("xx", "找到了" + (movnb + 1));
-                    CMD.simulateClick(xOP[movnb], yOP[movnb], execOS);
-                    Log.e("xx", "将要点击" + xOP[movnb]+ yOP[movnb]);
-                    movnb++;
+                if (useOpencv.NewCompare(screen, bitmaps[motivationNub])) {
+                    Log.e("xx", "找到了" + (motivationNub + 1));
+                    CMD.simulateClick(xOP[motivationNub], yOP[motivationNub], execOS);
+                    Log.e("xx", "将要点击" + xOP[motivationNub]+ yOP[motivationNub]);
+                    motivationNub++;
                 }
-                else  Log.e("xx", "长得不一样和" + (movnb + 1));}
+                else  Log.e("xx", "长得不一样和" + (motivationNub + 1));}
                 catch (Exception ignored){}
             }
         }
@@ -132,19 +131,14 @@ public class SimulateService extends Service {
         return null;
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        movnb = imagesNub+1;
-
-        if(t.isDaemon())Log.e("xx","dead") ;
+        motivationNub = imagesNub+1;
         try {
             CMD.WriteIDestroy();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }
