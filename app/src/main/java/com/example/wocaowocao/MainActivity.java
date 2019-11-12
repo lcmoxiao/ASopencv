@@ -3,8 +3,7 @@ package com.example.wocaowocao;
 
 import android.Manifest;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -17,6 +16,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.wocaowocao.Base.BaseActivity;
 import com.example.wocaowocao.Base.ViewInject;
@@ -30,10 +30,10 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Objects;
 
 import butterknife.BindView;
 
+import static com.example.wocaowocao.CMD.LBmanager;
 import static com.example.wocaowocao.CMD.dataPath;
 import static com.example.wocaowocao.CMD.delFile;
 import static com.example.wocaowocao.CMD.exec;
@@ -60,10 +60,11 @@ public class MainActivity extends BaseActivity {
     // 是否打开模拟悬浮窗
     Boolean issFloating = false;
 
-    BroadcastReceiver receiver ;
-
-    IntentFilter intentfilter;
-
+    shotReceiver shotReceiver = new shotReceiver();
+    finishedReceiver finishedReceiver = new finishedReceiver();
+    IntentFilter shotIntentFilter;
+    IntentFilter finishedIntentFilter;
+    Intent ShotedIntent = new Intent();
 
     @Override
     public void afterBindView()  {
@@ -71,7 +72,26 @@ public class MainActivity extends BaseActivity {
         initPermission();
         useOpencv.staticLoadCVLibraries();
         initFloatParams();
-        initFilter();
+        initBroadCast();
+    }
+
+    void xxx(){
+        CMD.screen = CMD.Shot11(getWindow().getDecorView(),0);
+        LBmanager.sendBroadcast(ShotedIntent);
+    }
+
+    private void initBroadCast()
+    {
+        CMD.mContext =this;
+        LBmanager = LocalBroadcastManager.getInstance(this);
+        shotIntentFilter = new IntentFilter();
+        shotIntentFilter.addAction("shot");
+        LBmanager.registerReceiver(shotReceiver,shotIntentFilter);
+        finishedIntentFilter = new IntentFilter();
+        finishedIntentFilter.addAction("finished");
+        LBmanager.registerReceiver(finishedReceiver,finishedIntentFilter);
+        ShotedIntent.setAction("finished");
+        ShotedIntent.setComponent( new ComponentName( "com.example.wocaowocao" , "com.example.wocaowocao.finishedReceiver") );
     }
 
     void initClick() {
@@ -144,26 +164,7 @@ public class MainActivity extends BaseActivity {
 
 
 
-    private void initFilter()
-    {
-        Intent intent = new Intent();
-        intent.setAction("finishShot");
 
-        receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                try {
-                    CMD.screen = CMD.Shot11(getWindow().getDecorView(), Objects.requireNonNull(intent.getExtras()).getInt("motivationNub"));
-                    sendBroadcast(intent);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        intentfilter = new IntentFilter();
-        intentfilter.addAction("shot");
-        registerReceiver(receiver,intentfilter);
-    }
 
 
 
@@ -198,8 +199,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(receiver);
-
+        LBmanager.unregisterReceiver(shotReceiver);
+        Log.e("xxx","Activity销毁");
 
     }
 }

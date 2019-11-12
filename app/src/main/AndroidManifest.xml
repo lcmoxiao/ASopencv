@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.wocaowocao"
-    >
+    package="com.example.wocaowocao">
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
-
 
     <application
         android:allowBackup="false"
@@ -17,20 +15,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <receiver android:name=".shotReceiver" />
+        <receiver android:name=".finishedReceiver" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".recogImg.recogImgActivity" />
-        <activity android:name=".FileManager.fmanagerActivity" />
+        <activity android:name=".fileManager.fmanagerActivity" />
 
         <service android:name=".recordservice.rFloatService" />
         <service android:name=".recordservice.RecordService" />
         <service android:name=".simulateservice.sFloatService" />
         <service android:name=".simulateservice.SimulateService" />
-
     </application>
 
 </manifest>

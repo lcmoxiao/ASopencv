@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.wocaowocao.CMD;
+import com.example.wocaowocao.Tshot;
 import com.example.wocaowocao.recogImg.useOpencv;
 
 import java.io.File;
@@ -19,15 +20,18 @@ import java.io.IOException;
 
 import static com.example.wocaowocao.CMD.br;
 import static com.example.wocaowocao.CMD.execOS;
+import static com.example.wocaowocao.CMD.screen;
 
 public class SimulateService extends Service {
     //读取的动作位置
-    int imagesNub;
-    int[] xOP;
-    int[] yOP;
-    Bitmap[] bitmaps;
+    static int imagesNub;
+    static int[] xOP;
+    static int[] yOP;
+    static Bitmap[] bitmaps;
     //循环和终止线程用的
-    int motivationNub = 0;
+    static int motivationNub = 0;
+    //用来录像的进程
+    public static Tshot tshot;
 
     @Override
     public void onCreate() {
@@ -42,23 +46,49 @@ public class SimulateService extends Service {
         bitmaps = new Bitmap[imagesNub+1];
         initXYOP();
         initBitmaps();
-
         t.start();
-
         super.onCreate();
     }
 
-    final Thread t = new Thread()
+    static final Thread t = new Thread()
     {
         @Override
         public void run() {
             super.run();
             //开始模拟
-            try {
-                startSimulate();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            int nub=0;
+            tshot = new Tshot(t);
+
+            while (motivationNub < imagesNub) {
+
+                Log.e("xx", "nub:" + nub);
+                nub++;
+                synchronized (t) {
+                    try {
+                        tshot.run();
+                        if(!tshot.thisnotified) {
+                            tshot.thiswaiting = true;
+                            Log.e("xxx", "t wait");
+                            t.wait();
+                        }else{Log.e("xxx", "t skip wait");}
+                        tshot.thisnotified =false;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (screen != null) {
+                    try{
+                        if (useOpencv.NewCompare(screen, bitmaps[motivationNub])) {
+                            Log.e("xx", "找到了" + (motivationNub + 1));
+                            CMD.simulateClick(xOP[motivationNub], yOP[motivationNub], execOS);
+                            Log.e("xx", "将要点击" + xOP[motivationNub]+ yOP[motivationNub]);
+                            motivationNub++;
+                        }
+                        else  Log.e("xx", "长得不一样和" + (motivationNub + 1));}
+                    catch (Exception ignored){}
+                }
             }
+            CMD.isSimulating = false;
         }
     };
 
@@ -92,37 +122,6 @@ public class SimulateService extends Service {
                 e.printStackTrace();
             }
         }
-        CMD.Shot(0);
-    }
-
-    void startSimulate() throws FileNotFoundException {
-        int nub=0;
-        while (motivationNub < imagesNub) {
-            CMD.Shot(0);
-            try {
-                synchronized (t) {
-                    t.wait(1000);
-                    Log.e("xx", "nub:" + nub);
-                    nub++;
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Bitmap screen = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV1/images/", 0 + ".png")));
-            if (screen != null) {
-
-                try{
-                if (useOpencv.NewCompare(screen, bitmaps[motivationNub])) {
-                    Log.e("xx", "找到了" + (motivationNub + 1));
-                    CMD.simulateClick(xOP[motivationNub], yOP[motivationNub], execOS);
-                    Log.e("xx", "将要点击" + xOP[motivationNub]+ yOP[motivationNub]);
-                    motivationNub++;
-                }
-                else  Log.e("xx", "长得不一样和" + (motivationNub + 1));}
-                catch (Exception ignored){}
-            }
-        }
-        CMD.isSimulating = false;
     }
 
     @Nullable
@@ -135,6 +134,7 @@ public class SimulateService extends Service {
     public void onDestroy() {
         super.onDestroy();
         motivationNub = imagesNub+1;
+        Log.e("xxx","xx"+t.getState());
         try {
             CMD.WriteIDestroy();
         } catch (IOException e) {

@@ -2,11 +2,9 @@ package com.example.wocaowocao.recogImg;
 
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.content.ComponentName;
 import android.content.Intent;
 
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -22,13 +20,16 @@ import android.widget.Toast;
 
 import com.example.wocaowocao.Base.BaseActivity;
 import com.example.wocaowocao.CMD;
+import com.example.wocaowocao.shotReceiver;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.Base.ViewInject;
 
-import java.io.FileNotFoundException;
+
 import java.io.InputStream;
 
 import butterknife.BindView;
+
+import static com.example.wocaowocao.CMD.LBmanager;
 
 
 @ViewInject(main_layout_id = R.layout.activity_recog)
@@ -47,9 +48,10 @@ public class recogImgActivity extends BaseActivity {
     @BindView(R.id.recog)
     LinearLayout mLayout;
 
+
     private Bitmap Bp1;
     private Bitmap Bp2;
-    private static String imgPath = Environment.getExternalStorageDirectory()+"/images/" ;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,13 +60,10 @@ public class recogImgActivity extends BaseActivity {
 
     @Override
     public void afterBindView() {
-
         imgRecognition();
-
-
     }
 
-    volatile boolean s = true;
+
     public void imgRecognition()
     {
         useOpencv.staticLoadCVLibraries();
@@ -77,25 +76,7 @@ public class recogImgActivity extends BaseActivity {
         selectBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction("shot");
-                intent.putExtra("motivationNub",0);
-                sendBroadcast(intent);
-                BroadcastReceiver receiver = new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        s= false;
-                    }
-                };
-                IntentFilter intentFilter = new IntentFilter();
-                intentFilter.addAction("finishShot");
-                registerReceiver(receiver,intentFilter);
-
-                while(s){ Log.e("xxx","?"); }
-                Log.e("xxx","finish");
-                unregisterReceiver(receiver);
-                Bp2 = CMD.screen;
-                ImageView2.setImageBitmap(Bp2);
+                select2Image();
             }
         });
         processBtn.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +87,6 @@ public class recogImgActivity extends BaseActivity {
                     Toast.makeText(getBaseContext(),"真像",Toast.LENGTH_LONG).show();
                 else
                     Toast.makeText(getBaseContext(),"不像",Toast.LENGTH_LONG).show();
-
             }
         });
     }

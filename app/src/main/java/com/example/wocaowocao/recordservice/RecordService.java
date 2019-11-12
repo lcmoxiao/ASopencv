@@ -156,8 +156,8 @@ public class RecordService extends Service {
         synchronized (t)
         {
 
+            //SHOTSHOTSHOTSHOTx*****************************motivationNub
 
-            CMD.Shot(motivationNub);
             CMD.WriteGesture((int) x, (int) y, motivationNub);
             t.wait(100);
             //读取刚才的动作图
@@ -168,7 +168,9 @@ public class RecordService extends Service {
 
             //识别动作图，如果一致则通过识别，不然就反复读取。
             while (CMD.isRecording) {
-                CMD.Shot(0);
+
+                //SHOTSHOTSHOTSHOTx*****************************000000000000000
+
                 t.wait(1000);
                 screen = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV1/images/", 0 + ".png")));
                 try {
@@ -186,7 +188,9 @@ public class RecordService extends Service {
             //识别模拟点击是否通过，如果一致则通过识别,不然就再点一次
             while (CMD.isRecording) {
                 t.wait(500);
-                CMD.Shot(0);
+
+                //SHOTSHOTSHOTSHOTx*****************************00000000000000000000000
+
                 t.wait(1000);
                 screen = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV1/images/", 0 + ".png")));
                 try {

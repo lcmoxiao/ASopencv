@@ -1,13 +1,18 @@
 package com.example.wocaowocao;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.opencv.features2d.Params;
 
@@ -31,6 +36,7 @@ public class CMD {
     public static Boolean isRecording = false;
     //是否在模拟操作
     public static Boolean isSimulating = false;
+
     //悬浮窗的位置
     public static int RparamX =980, RparamY =1024;
     //悬浮窗的位置
@@ -40,8 +46,11 @@ public class CMD {
     //录制动作标号
     public static int motivationNub = 1;
     //临时截屏
-    public static Bitmap screen;
+    public static Bitmap screen = null;
 
+    public static Context mContext;
+
+    public static LocalBroadcastManager LBmanager;
 
     private static OutputStream writeOS = null;
     private static PrintWriter pw=null;
@@ -91,24 +100,17 @@ public class CMD {
         return  new File(rootPath+"/images").listFiles().length;
     }
 
-    /**
-     * 截图
-     *
-     *
-     * @param MotivationNub 行数 0 是留给操作截图用的，》0的才是保存的文件
-     */
-    public static void Shot(int MotivationNub) {
-        exec("screencap -p "+dataPath+"MOV1/images/"+MotivationNub+".png", execOS);
-    }
 
 
-
-    static Bitmap Shot11(View view, int MotivationNub) throws FileNotFoundException {
-
+    public static Bitmap Shot11(View view, int MotivationNub)  {
         Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         view.draw(canvas);
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dataPath+"MOV1/images/"+MotivationNub+".png")) );
+        try {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dataPath+"MOV1/images/"+MotivationNub+".png")) );
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         return bitmap;
     }
 

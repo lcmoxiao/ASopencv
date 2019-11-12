@@ -1,4 +1,4 @@
-package com.example.wocaowocao.FileManager;
+package com.example.wocaowocao.fileManager;
 
 import com.example.wocaowocao.Base.BaseActivity;
 
