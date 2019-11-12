@@ -87,6 +87,7 @@ public class SimulateService extends Service {
                         else  Log.e("xx", "长得不一样和" + (motivationNub + 1));}
                     catch (Exception ignored){}
                 }
+                break;
             }
             CMD.isSimulating = false;
         }

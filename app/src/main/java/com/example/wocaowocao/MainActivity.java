@@ -4,11 +4,14 @@ package com.example.wocaowocao;
 import android.Manifest;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
 import android.util.Log;
 import android.view.View;
 
@@ -20,6 +23,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.wocaowocao.Base.BaseActivity;
 import com.example.wocaowocao.Base.ViewInject;
+import com.example.wocaowocao.receiver.finishedReceiver;
+import com.example.wocaowocao.receiver.shotReceiver;
 import com.example.wocaowocao.recogImg.recogImgActivity;
 import com.example.wocaowocao.recogImg.useOpencv;
 import com.example.wocaowocao.recordservice.rFloatService;
@@ -60,8 +65,8 @@ public class MainActivity extends BaseActivity {
     // 是否打开模拟悬浮窗
     Boolean issFloating = false;
 
-    shotReceiver shotReceiver = new shotReceiver();
-    finishedReceiver finishedReceiver = new finishedReceiver();
+    com.example.wocaowocao.receiver.shotReceiver shotReceiver = new shotReceiver();
+    com.example.wocaowocao.receiver.finishedReceiver finishedReceiver = new finishedReceiver();
     IntentFilter shotIntentFilter;
     IntentFilter finishedIntentFilter;
     Intent ShotedIntent = new Intent();
@@ -75,8 +80,8 @@ public class MainActivity extends BaseActivity {
         initBroadCast();
     }
 
-    void xxx(){
-        CMD.screen = CMD.Shot11(getWindow().getDecorView(),0);
+    public void xxx(){
+
         LBmanager.sendBroadcast(ShotedIntent);
     }
 
@@ -91,7 +96,7 @@ public class MainActivity extends BaseActivity {
         finishedIntentFilter.addAction("finished");
         LBmanager.registerReceiver(finishedReceiver,finishedIntentFilter);
         ShotedIntent.setAction("finished");
-        ShotedIntent.setComponent( new ComponentName( "com.example.wocaowocao" , "com.example.wocaowocao.finishedReceiver") );
+        ShotedIntent.setComponent( new ComponentName( "com.example.wocaowocao" , "com.example.wocaowocao.receiver.finishedReceiver") );
     }
 
     void initClick() {
@@ -140,20 +145,7 @@ public class MainActivity extends BaseActivity {
         selectBtn5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap ;
-                try {
 
-                    long startTime=System.currentTimeMillis();
-
-                    bitmap = BitmapFactory.decodeStream( new FileInputStream(new File(dataPath + "MOV1/images/", 1 + ".png")));
-                    Log.e("xx",  bitmap.getHeight()+"");
-                    Log.e("xx",  bitmap.getWidth()+"");
-
-                    long endTime=System.currentTimeMillis();
-                    Log.e("xx",  +(endTime - startTime)+"ms");
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
 
 
             }

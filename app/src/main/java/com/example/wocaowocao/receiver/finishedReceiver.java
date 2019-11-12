@@ -1,4 +1,4 @@
-package com.example.wocaowocao;
+package com.example.wocaowocao.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

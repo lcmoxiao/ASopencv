@@ -1,14 +1,21 @@
 package com.example.wocaowocao;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.SurfaceTexture;
 import android.os.Environment;
+import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -25,6 +32,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 
 public class CMD {
 
@@ -93,15 +101,13 @@ public class CMD {
         exec("input tap " + x + " " + y ,os);
     }
 
+
+
+
+
     /**
-     * 获取当前动作数
+     * 本应用内部的截屏，需要先初始化Context
      */
-    public static int getMovNub() {
-        return  new File(rootPath+"/images").listFiles().length;
-    }
-
-
-
     public static Bitmap Shot11(View view, int MotivationNub)  {
         Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

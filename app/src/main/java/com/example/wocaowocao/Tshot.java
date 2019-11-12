@@ -10,29 +10,25 @@ import static com.example.wocaowocao.CMD.LBmanager;
 public class Tshot extends Thread{
 
     //Tshot是否提醒过了
-    static Boolean Tshotnotified = false;
+    public static Boolean Tshotnotified = false;
     //Tshot是否在睡眠
-    static Boolean Tshotwaiting = false;
+    public static Boolean Tshotwaiting = false;
 
     private Thread T;
     public boolean thisnotified = false;
     public boolean thiswaiting = false;
-
-
 
     public Tshot(Thread _T)
     {
         T=_T;
     }
 
-
-
     @Override
     public void run() {
         super.run();
         Intent intent = new Intent();
         intent.setAction("shot");
-        intent.setComponent( new ComponentName( "com.example.wocaowocao" , "com.example.wocaowocao.shotReceiver") );
+        intent.setComponent( new ComponentName( "com.example.wocaowocao" , "com.example.wocaowocao.receiver.shotReceiver") );
 
         Log.e("xxx","Tshot start");
         try {
@@ -59,4 +55,5 @@ public class Tshot extends Thread{
             e.printStackTrace();
         }
     }
+
 }

@@ -2,15 +2,12 @@ package com.example.wocaowocao.recogImg;
 
 
 
-import android.content.ComponentName;
 import android.content.Intent;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,8 +16,6 @@ import android.widget.Toast;
 
 
 import com.example.wocaowocao.Base.BaseActivity;
-import com.example.wocaowocao.CMD;
-import com.example.wocaowocao.shotReceiver;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.Base.ViewInject;
 
@@ -28,8 +23,6 @@ import com.example.wocaowocao.Base.ViewInject;
 import java.io.InputStream;
 
 import butterknife.BindView;
-
-import static com.example.wocaowocao.CMD.LBmanager;
 
 
 @ViewInject(main_layout_id = R.layout.activity_recog)

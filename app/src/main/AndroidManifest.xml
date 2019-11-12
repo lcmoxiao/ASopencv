@@ -15,8 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <receiver android:name=".shotReceiver" />
-        <receiver android:name=".finishedReceiver" />
+        <receiver android:name=".receiver.shotReceiver" />
+        <receiver android:name=".receiver.finishedReceiver" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -27,11 +27,13 @@
         </activity>
         <activity android:name=".recogImg.recogImgActivity" />
         <activity android:name=".fileManager.fmanagerActivity" />
+        <activity android:name=".shotActivity" />
 
         <service android:name=".recordservice.rFloatService" />
         <service android:name=".recordservice.RecordService" />
         <service android:name=".simulateservice.sFloatService" />
         <service android:name=".simulateservice.SimulateService" />
+        <service android:name=".shotService" />
     </application>
 
 </manifest>
