@@ -1,27 +1,18 @@
 package com.example.wocaowocao;
 
-import android.annotation.SuppressLint;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
-import android.graphics.SurfaceTexture;
+
+
 import android.os.Environment;
-import android.os.IBinder;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
+
 import android.view.Gravity;
-import android.view.Surface;
+
 import android.view.View;
 import android.view.WindowManager;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import org.opencv.features2d.Params;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -32,7 +23,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
+
+import static com.example.wocaowocao.shotService.startCapture;
 
 public class CMD {
 
@@ -51,14 +43,8 @@ public class CMD {
     public static int SparamX =980, SparamY =1024;
     //悬浮窗的参数
     public static WindowManager.LayoutParams floatParams;
-    //录制动作标号
-    public static int motivationNub = 1;
     //临时截屏
-    public static Bitmap screen = null;
-
-    public static Context mContext;
-
-    public static LocalBroadcastManager LBmanager;
+    private static Bitmap screen = null;
 
     private static OutputStream writeOS = null;
     private static PrintWriter pw=null;
@@ -102,7 +88,20 @@ public class CMD {
     }
 
 
+    public static Bitmap Shot(int motivationNub){
+        screen = startCapture();
+        try {
+            screen.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dataPath+"MOV1/images/"+motivationNub+".png")) );
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return screen;
+    }
 
+    public static Bitmap getScreen(){
+        screen = startCapture();
+        return screen;
+    }
 
 
     /**

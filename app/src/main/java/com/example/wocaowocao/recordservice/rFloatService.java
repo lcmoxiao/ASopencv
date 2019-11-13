@@ -5,7 +5,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -80,7 +79,6 @@ public class rFloatService extends Service {
                         x2 = event.getRawX();
                         y2 = event.getRawY();
                         double distance = Math.sqrt(Math.abs(x1-x2)*Math.abs(x1-x2)+Math.abs(y1-y2)*Math.abs(y1-y2));//两点之间的距离
-                        Log.i("i", "x1 - x2>>>>>>"+ distance);
                         if (distance < 15) { // 距离较小，当作click事件来处理
                             if(!CMD.isRecording) {
                                 //点击后开始录制
@@ -92,23 +90,18 @@ public class rFloatService extends Service {
                                 Toast.makeText(getBaseContext(), "准备就绪", Toast.LENGTH_SHORT).show();
                                 return true;
                             }else {
-                                Log.e("xxx", "下一次录制就绪");
+                                Toast.makeText(getBaseContext(), "下一次录制就绪", Toast.LENGTH_SHORT).show();
                                 stopService(new Intent(rFloatService.this, RecordService.class));
-                                float_img.setImageResource(R.color.colorRecordingWait);
-                                windowManager.updateViewLayout(float_img, CMD.floatParams);
                                 startService(new Intent(rFloatService.this, RecordService.class));
+                                float_img.setImageResource(R.color.colorExecuting);
+                                windowManager.updateViewLayout(float_img, CMD.floatParams);
                             }
                         } else {
                             if(!CMD.isRecording) {
                                 Toast.makeText(getBaseContext(), "请找个好点的位置", Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                CMD.isRecording = false;
-                                Toast.makeText(getBaseContext(), "录制结束", Toast.LENGTH_SHORT).show();
-                                stopService(new Intent(rFloatService.this, RecordService.class));
-                                float_img.setImageResource(R.color.colorRecordingWait);
-                                windowManager.updateViewLayout(float_img, CMD.floatParams);
-                                return true ;
+                                Toast.makeText(getBaseContext(), "出问题了", Toast.LENGTH_SHORT).show();
                             }
                         }
                 }
@@ -116,8 +109,6 @@ public class rFloatService extends Service {
             }
         });
     }
-
-
 
     @Override
     public void onDestroy() {

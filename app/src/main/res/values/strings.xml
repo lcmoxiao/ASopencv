@@ -11,4 +11,5 @@
     <string name="simulate">打开模拟操作悬浮窗（ROOT！）</string>
     <string name="delfile">清空文件</string>
     <string name="FileManager">文件管理</string>
+    <string name="core">按键精灵</string>
 </resources>

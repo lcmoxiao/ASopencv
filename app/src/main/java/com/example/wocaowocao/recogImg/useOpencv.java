@@ -113,8 +113,7 @@ public class useOpencv {
         }
         Log.e("xx", "有那么多处不同" +iDiffNum);
         //输出什么看个人喜好
-        return iDiffNum <= 50;
+        return iDiffNum <= 100;
     }
-
 
 }
