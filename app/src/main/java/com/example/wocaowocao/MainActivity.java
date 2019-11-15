@@ -28,8 +28,6 @@ import com.example.wocaowocao.Base.BaseActivity;
 import com.example.wocaowocao.Base.ViewInject;
 import com.example.wocaowocao.recogImg.recogImgActivity;
 import com.example.wocaowocao.recogImg.useOpencv;
-import com.example.wocaowocao.recordservice.rFloatService;
-import com.example.wocaowocao.simulateservice.simulateFloatService;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.DataOutputStream;

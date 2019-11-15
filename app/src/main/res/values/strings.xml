@@ -12,4 +12,5 @@
     <string name="delfile">清空文件</string>
     <string name="FileManager">文件管理</string>
     <string name="core">按键精灵</string>
+    <string name="one">1</string>
 </resources>
