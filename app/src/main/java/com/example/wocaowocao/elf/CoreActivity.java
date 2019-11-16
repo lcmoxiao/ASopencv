@@ -1,10 +1,9 @@
-package com.example.wocaowocao;
+package com.example.wocaowocao.elf;
 
 import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
@@ -12,28 +11,32 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.wocaowocao.Base.BaseActivity;
-import com.example.wocaowocao.Base.ViewInject;
-import com.example.wocaowocao.recordservice.rFloatService;
-import com.example.wocaowocao.simulateservice.simulateFloatService;
+import com.example.wocaowocao.base.BaseActivity;
+import com.example.wocaowocao.base.ViewInject;
+import com.example.wocaowocao.base.CMD;
+import com.example.wocaowocao.R;
+import com.example.wocaowocao.elf.recordservice.rFloatService;
+import com.example.wocaowocao.elf.simulateservice.simulateFloatService;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
-import static com.example.wocaowocao.CMD.dataPath;
-import static com.example.wocaowocao.CMD.delFile;
-import static com.example.wocaowocao.MainActivity.isrFloating;
-import static com.example.wocaowocao.MainActivity.issFloating;
+import static com.example.wocaowocao.base.CMD.dataPath;
+
 
 @ViewInject(main_layout_id = R.layout.activity_core)
 public class CoreActivity extends BaseActivity {
 
-    @BindView(R.id.select_btn2)
+    @BindView(R.id.core_btn1)
     Button selectBtn2;
-    @BindView(R.id.select_btn3)
+    @BindView(R.id.core_btn2)
     Button selectBtn3;
-    @BindView(R.id.select_btn4)
+    @BindView(R.id.core_btn3)
     Button selectBtn4;
+
+    // 是否打开录制悬浮窗
+    static Boolean isrFloating = false;
+    // 是否打开模拟悬浮窗
+    static Boolean issFloating = false;
 
     @Override
     public void afterBindView()  {
@@ -76,7 +79,7 @@ public class CoreActivity extends BaseActivity {
         selectBtn4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                delFile(dataPath + "MOV1");
+                CMD.delFile(dataPath + "MOV1");
             }
         });
     }

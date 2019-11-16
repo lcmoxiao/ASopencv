@@ -1,4 +1,4 @@
-package com.example.wocaowocao.recordservice;
+package com.example.wocaowocao.elf.recordservice;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -19,18 +19,17 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.example.wocaowocao.CMD;
+import com.example.wocaowocao.base.CMD;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.recogImg.useOpencv;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 
-import static com.example.wocaowocao.CMD.Shot;
-import static com.example.wocaowocao.CMD.getScreen;
+import static com.example.wocaowocao.base.CMD.Shot;
+import static com.example.wocaowocao.base.CMD.getScreen;
 
 public class RecordService extends Service {
 
@@ -47,33 +46,12 @@ public class RecordService extends Service {
     public void onCreate() {
         super.onCreate();
         try {
-            initFile();
-            CMD.WriteIGInit();
             createToucher();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // 初始化目录
-    private void initFile() throws Exception {
-        File f1 = new File(CMD.dataPath);
-        if (!f1.exists()) {
-            if (!f1.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f2 = new File(CMD.dataPath + "MOV1");
-        if (!f2.exists()) {
-            if (!f2.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f3 = new File(CMD.dataPath + "MOV1/images");
-        if (!f3.exists()) {
-            if (!f3.mkdirs()) throw new Exception("你创建不了文件夹");
-        }
-        File f4 = new File(CMD.dataPath, "MOV1/gesture.txt");
-        if (!f4.exists()) {
-            if (!f4.createNewFile()) throw new Exception("你创建不了文件");
-        }
-    }
 
     @Nullable
     @Override
@@ -112,7 +90,6 @@ public class RecordService extends Service {
         record_img = new ImageView(this);
         record_img.setImageResource(R.color.colorClear);
         windowManager.addView(record_img, params);
-
         record_img.setOnLongClickListener(new View.OnLongClickListener()
         {
             @Override
@@ -137,7 +114,6 @@ public class RecordService extends Service {
                     //得到相对应屏幕左上角的坐标
                     x = event.getRawX();
                     y = event.getRawY();
-                    Log.e("xxx", "start");
                     windowManager.removeView(record_img);
                     t.start();
                 }
@@ -207,12 +183,8 @@ public class RecordService extends Service {
 
     @Override
     public void onDestroy() {
-        try {
-            record_img.setEnabled(false);
-            CMD.WriteIGDestroy();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        record_img.setEnabled(false);
+        stopService(new Intent(RecordService.this, rFloatService.class));
         super.onDestroy();
     }
 }

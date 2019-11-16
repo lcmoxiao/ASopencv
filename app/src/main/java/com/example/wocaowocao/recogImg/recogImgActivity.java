@@ -15,9 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
-import com.example.wocaowocao.Base.BaseActivity;
+import com.example.wocaowocao.base.BaseActivity;
 import com.example.wocaowocao.R;
-import com.example.wocaowocao.Base.ViewInject;
+import com.example.wocaowocao.base.ViewInject;
 
 
 import java.io.InputStream;
@@ -28,9 +28,9 @@ import butterknife.BindView;
 @ViewInject(main_layout_id = R.layout.activity_recog)
 public class recogImgActivity extends BaseActivity {
 
-    @BindView(R.id.select_btn1)
+    @BindView(R.id.recog_btn1)
     Button selectBtn1;
-    @BindView(R.id.select_btn2)
+    @BindView(R.id.recog_btn2)
     Button selectBtn2;
     @BindView(R.id.process_btn)
     Button processBtn;

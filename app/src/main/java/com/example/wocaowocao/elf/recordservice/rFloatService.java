@@ -1,4 +1,4 @@
-package com.example.wocaowocao.recordservice;
+package com.example.wocaowocao.elf.recordservice;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -14,9 +14,10 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.example.wocaowocao.CMD;
+import com.example.wocaowocao.base.CMD;
 import com.example.wocaowocao.R;
 
+import static com.example.wocaowocao.base.CMD.initMovFile;
 
 
 public class rFloatService extends Service {
@@ -34,7 +35,14 @@ public class rFloatService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        createToucher();
+        try {
+            initMovFile(1);
+            CMD.WriteIGInit();
+            createToucher();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Nullable

@@ -1,4 +1,4 @@
-package com.example.wocaowocao;
+package com.example.wocaowocao.elf;
 
 import android.app.Service;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.IBinder;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import java.nio.ByteBuffer;
 
@@ -112,6 +114,7 @@ public class shotService extends Service {
             mediaProjection.stop();
             mediaProjection=null;
         }
+        Toast.makeText(getApplicationContext(), "截屏service已注销", Toast.LENGTH_SHORT).show();
 
     }
 

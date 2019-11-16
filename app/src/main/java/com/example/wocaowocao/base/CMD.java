@@ -1,4 +1,4 @@
-package com.example.wocaowocao;
+package com.example.wocaowocao.base;
 
 
 import android.graphics.Bitmap;
@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import static com.example.wocaowocao.shotService.startCapture;
+import static com.example.wocaowocao.elf.shotService.startCapture;
 
 public class CMD {
 
@@ -83,8 +83,29 @@ public class CMD {
      * @param x 横坐标
      * @param y 纵坐标
      */
-    public static  void simulateClick(int x, int y, DataOutputStream os) {
+    public static void simulateClick(int x, int y, DataOutputStream os) {
         exec("input tap " + x + " " + y ,os);
+    }
+
+
+    // 初始化MOV目录
+    public static void initMovFile(int Movnb) throws Exception {
+        File f1 = new File(CMD.dataPath);
+        if (!f1.exists()) {
+            if (!f1.mkdirs()) throw new Exception("你创建不了文件夹");
+        }
+        File f2 = new File(CMD.dataPath + "MOV"+Movnb);
+        if (!f2.exists()) {
+            if (!f2.mkdirs()) throw new Exception("你创建不了文件夹");
+        }
+        File f3 = new File(CMD.dataPath + "MOV"+Movnb+"/images");
+        if (!f3.exists()) {
+            if (!f3.mkdirs()) throw new Exception("你创建不了文件夹");
+        }
+        File f4 = new File(CMD.dataPath, "MOV"+Movnb+"/gesture.txt");
+        if (!f4.exists()) {
+            if (!f4.createNewFile()) throw new Exception("你创建不了文件");
+        }
     }
 
 
@@ -157,7 +178,7 @@ public class CMD {
      * @param path 文件路径
      *
      */
-    static boolean delFile(String path) {
+    public static boolean delFile(String path) {
         File file = new File(path);
         if (!file.exists()) {
             return false;
@@ -174,13 +195,11 @@ public class CMD {
 
 
     //初始化录入图片
-    public static void WriteIInit() throws IOException {
+    public static void WriteGestureInit() throws IOException {
         br = new BufferedReader(new FileReader(CMD.dataPath+"MOV1/gesture.txt"));
-        execOS = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream());
     }
 
-    public static void WriteIDestroy() throws IOException {
-        execOS.close();
+    public static void WriteGestureDestroy() throws IOException {
         br.close();
     }
 

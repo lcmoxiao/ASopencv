@@ -1,4 +1,4 @@
-package com.example.wocaowocao.simulateservice;
+package com.example.wocaowocao.elf.simulateservice;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -20,8 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.example.wocaowocao.CMD;
-import com.example.wocaowocao.MainActivity;
+import com.example.wocaowocao.base.CMD;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.recogImg.useOpencv;
 
@@ -30,9 +29,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import static com.example.wocaowocao.CMD.br;
-import static com.example.wocaowocao.CMD.execOS;
-import static com.example.wocaowocao.CMD.getScreen;
+import static com.example.wocaowocao.base.CMD.br;
+import static com.example.wocaowocao.base.CMD.execOS;
+import static com.example.wocaowocao.base.CMD.getScreen;
 
 public class simulateFloatService extends Service {
 
@@ -63,7 +62,7 @@ public class simulateFloatService extends Service {
         bitmaps = new Bitmap[imagesNub+1];
 
         try {
-            CMD.WriteIInit();
+            CMD.WriteGestureInit();
             initXYOP();
             initBitmaps();
         } catch (IOException e) {
@@ -234,7 +233,7 @@ public class simulateFloatService extends Service {
         float_img.setEnabled(false);
         windowManager.removeView(float_img);
         try {
-            CMD.WriteIDestroy();
+            CMD.WriteGestureDestroy();
         } catch (IOException e) {
             e.printStackTrace();
         }

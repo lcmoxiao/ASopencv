@@ -7,4 +7,5 @@
     <color name="colorRecordingWait">#17FF3F</color>
     <color name="colorExecuting">#00BCD4</color>
     <color name="colorSimulateWait">#FFC107</color>
+    <color name="colorName">#BA12D9</color>
 </resources>
