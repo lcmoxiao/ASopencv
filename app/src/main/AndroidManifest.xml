@@ -17,14 +17,14 @@
         tools:ignore="GoogleAppIndexingWarning">
 
 
-        <activity android:name=".base.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".recogImg.recogImgActivity" />
-        <activity android:name=".fileManager.depositoryActivity" />
+        <activity android:name=".depository.depositoryActivity" />
         <activity android:name=".elf.CoreActivity" />
 
         <service android:name=".elf.recordservice.rFloatService" />

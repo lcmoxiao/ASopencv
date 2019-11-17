@@ -56,13 +56,13 @@ public class simulateFloatService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        imagesNub = new File(CMD.dataPath + "MOV1/images").listFiles().length;
+        imagesNub = new File(CMD.dataPath + "MOV"+CMD.MOVnub+"/images").listFiles().length;
         xOP = new int [imagesNub+1];
         yOP = new int [imagesNub+1];
         bitmaps = new Bitmap[imagesNub+1];
 
         try {
-            CMD.WriteGestureInit();
+            CMD.WriteGestureInit(CMD.MOVnub);
             initXYOP();
             initBitmaps();
         } catch (IOException e) {

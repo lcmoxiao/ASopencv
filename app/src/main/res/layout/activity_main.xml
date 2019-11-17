@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@mipmap/heart"
 
-    tools:context="com.example.wocaowocao.base.MainActivity">
+    tools:context="com.example.wocaowocao.MainActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"

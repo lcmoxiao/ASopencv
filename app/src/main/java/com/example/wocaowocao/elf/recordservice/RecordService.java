@@ -97,6 +97,7 @@ public class RecordService extends Service {
                 CMD.isRecording = false;
                 windowManager.removeView(record_img);
                 Toast.makeText(getApplicationContext(),"已结束",Toast.LENGTH_SHORT).show();
+                stopService(new Intent(RecordService.this, rFloatService.class));
                 stopSelf();
                 return true;
             }
@@ -140,9 +141,9 @@ public class RecordService extends Service {
     void Record() throws FileNotFoundException {
         Bitmap bitmap;
         synchronized (t) {
-            Shot(motivationNub);
+            Shot(motivationNub,CMD.MOVnub);
             CMD.WriteGesture((int) x, (int) y, motivationNub);
-            bitmap = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV1/images/", motivationNub + ".png")));
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV"+CMD.MOVnub+"/images/", motivationNub + ".png")));
             //给截空图用的
             try {
                 //识别动作图，如果一致则通过识别，不然就反复读取。
@@ -184,7 +185,7 @@ public class RecordService extends Service {
     @Override
     public void onDestroy() {
         record_img.setEnabled(false);
-        stopService(new Intent(RecordService.this, rFloatService.class));
+
         super.onDestroy();
     }
 }

@@ -12,7 +12,6 @@ import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import java.nio.ByteBuffer;
@@ -47,7 +46,7 @@ public class shotService extends Service {
             virtualDisplay=mediaProjection.createVirtualDisplay("ScreenShotDemo",
                     mScreenWidth, mScreenHeight, mScreenDensity,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                    mImageReader.getSurface(), null/*Callbacks*/, null/*Handler*/);
+                    mImageReader.getSurface(), null, null);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,8 +113,7 @@ public class shotService extends Service {
             mediaProjection.stop();
             mediaProjection=null;
         }
-        Toast.makeText(getApplicationContext(), "截屏service已注销", Toast.LENGTH_SHORT).show();
-
+        //Toast.makeText(getApplicationContext(), "截屏service已注销", Toast.LENGTH_SHORT).show();
     }
 
     @Nullable

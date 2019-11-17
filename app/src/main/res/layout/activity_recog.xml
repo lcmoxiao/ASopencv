@@ -5,11 +5,12 @@
     android:id="@+id/recog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.wocaowocao.base.MainActivity"
+    tools:context="com.example.wocaowocao.MainActivity"
     android:orientation="vertical"
     android:gravity="center"
-
-    >    <ImageView
+    android:background="@mipmap/night"
+    >
+    <ImageView
     android:id="@+id/imageView1"
     android:layout_width="380dp"
     android:layout_height="240dp"
@@ -20,20 +21,27 @@
     <Button
         android:id="@+id/recog_btn1"
         android:text="@string/selecimg1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/selector_main_activity_button"
         />
     <Button
         android:id="@+id/recog_btn2"
         android:text="@string/selecimg2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/selector_main_activity_button"
         />
     <Button
         android:id="@+id/process_btn"
         android:text="@string/deal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/selector_main_activity_button"
+        android:layout_marginBottom="10dp"
         />
 
 

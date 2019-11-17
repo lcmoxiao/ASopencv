@@ -79,7 +79,7 @@ public class CoreActivity extends BaseActivity {
         selectBtn4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CMD.delFile(dataPath + "MOV1");
+                CMD.delFile(dataPath + "MOV"+CMD.MOVnub);
             }
         });
     }
@@ -108,9 +108,10 @@ public class CoreActivity extends BaseActivity {
                 intent.putExtra("mScreenHeight", mScreenHeight);
                 intent.putExtra("mScreenDensity", mScreenDensity);
                 startService(intent);
-                Toast.makeText(this, "成功开启服务", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "成功开启服务", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "服务开启失败", Toast.LENGTH_SHORT).show();
+                finish();
             }
         }
     }

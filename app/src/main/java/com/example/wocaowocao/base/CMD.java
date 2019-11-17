@@ -32,6 +32,7 @@ public class CMD {
     private static String rootPath = Environment.getExternalStorageDirectory().getPath()+"/";
     //文件目录
     public static String dataPath = rootPath+"1test/";
+
     // 是否在录制
     public static Boolean isRecording = false;
     //是否在模拟操作
@@ -45,6 +46,8 @@ public class CMD {
     public static WindowManager.LayoutParams floatParams;
     //临时截屏
     private static Bitmap screen = null;
+    //动作控制中心MOVnub
+    public static int MOVnub = 1;
 
     private static OutputStream writeOS = null;
     private static PrintWriter pw=null;
@@ -57,7 +60,7 @@ public class CMD {
      * @param cmd
      *            指令
      */
-     static void exec(String cmd, DataOutputStream os) {
+     public static void exec(String cmd, DataOutputStream os) {
         try {
             os.writeBytes(cmd + "\n");
             os.flush();
@@ -88,31 +91,32 @@ public class CMD {
     }
 
 
-    // 初始化MOV目录
-    public static void initMovFile(int Movnb) throws Exception {
+    // 刷新目录
+    public static void initMovFile(int MOVnub) throws Exception {
+        CMD.delFile(dataPath + "MOV"+CMD.MOVnub);
         File f1 = new File(CMD.dataPath);
         if (!f1.exists()) {
             if (!f1.mkdirs()) throw new Exception("你创建不了文件夹");
         }
-        File f2 = new File(CMD.dataPath + "MOV"+Movnb);
+        File f2 = new File(CMD.dataPath + "MOV"+MOVnub);
         if (!f2.exists()) {
             if (!f2.mkdirs()) throw new Exception("你创建不了文件夹");
         }
-        File f3 = new File(CMD.dataPath + "MOV"+Movnb+"/images");
+        File f3 = new File(CMD.dataPath + "MOV"+MOVnub+"/images");
         if (!f3.exists()) {
             if (!f3.mkdirs()) throw new Exception("你创建不了文件夹");
         }
-        File f4 = new File(CMD.dataPath, "MOV"+Movnb+"/gesture.txt");
+        File f4 = new File(CMD.dataPath, "MOV"+MOVnub+"/gesture.txt");
         if (!f4.exists()) {
             if (!f4.createNewFile()) throw new Exception("你创建不了文件");
         }
     }
 
 
-    public static Bitmap Shot(int motivationNub){
+    public static Bitmap Shot(int motivationNub,int MOVnub){
         screen = startCapture();
         try {
-            screen.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dataPath+"MOV1/images/"+motivationNub+".png")) );
+            screen.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dataPath+"MOV"+MOVnub+"/images/"+motivationNub+".png")) );
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -158,7 +162,7 @@ public class CMD {
      * @param file 文件
      *
      */
-    static boolean delFile(File file) {
+    private static boolean delFile(File file) {
         if (!file.exists()) {
             return false;
         }
@@ -195,8 +199,8 @@ public class CMD {
 
 
     //初始化录入图片
-    public static void WriteGestureInit() throws IOException {
-        br = new BufferedReader(new FileReader(CMD.dataPath+"MOV1/gesture.txt"));
+    public static void WriteGestureInit(int MOVnub) throws IOException {
+        br = new BufferedReader(new FileReader(CMD.dataPath+"MOV"+MOVnub+"/gesture.txt"));
     }
 
     public static void WriteGestureDestroy() throws IOException {
@@ -205,9 +209,9 @@ public class CMD {
 
 
     //初始化 读写手势 和录入图片
-    public static void WriteIGInit() throws IOException {
+    public static void WriteIGInit(int MOVnub) throws IOException {
         execOS = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream());
-        writeOS = new FileOutputStream(CMD.dataPath+"MOV1/gesture.txt",true);
+        writeOS = new FileOutputStream(CMD.dataPath+"MOV"+MOVnub+"/gesture.txt",true);
         pw=new PrintWriter(writeOS);
         pw.flush();
     }
@@ -218,7 +222,7 @@ public class CMD {
         execOS.close();
     }
 
-    static void initFloatParams() {
+    public static void initFloatParams() {
         //赋值WindowManager&LayoutParam.
         floatParams = new WindowManager.LayoutParams();
         //设置type.系统提示型窗口，一般都在应用程序窗口之上.
@@ -237,5 +241,7 @@ public class CMD {
         floatParams.width = 100;// 设置悬浮窗口长宽数据
         floatParams.height = 100;
     }
+
+
 
 }

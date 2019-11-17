@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorClear">#00ffffff</color>
+    <color name="colorClear30">#4DECF635</color>
     <color name="colorRecordingWait">#17FF3F</color>
     <color name="colorExecuting">#00BCD4</color>
     <color name="colorSimulateWait">#FFC107</color>

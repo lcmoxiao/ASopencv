@@ -17,6 +17,9 @@ import androidx.annotation.Nullable;
 import com.example.wocaowocao.base.CMD;
 import com.example.wocaowocao.R;
 
+import java.io.IOException;
+
+import static com.example.wocaowocao.base.CMD.WriteIGDestroy;
 import static com.example.wocaowocao.base.CMD.initMovFile;
 
 
@@ -36,8 +39,8 @@ public class rFloatService extends Service {
     public void onCreate() {
         super.onCreate();
         try {
-            initMovFile(1);
-            CMD.WriteIGInit();
+            initMovFile(CMD.MOVnub);
+            CMD.WriteIGInit(CMD.MOVnub);
             createToucher();
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,6 +125,11 @@ public class rFloatService extends Service {
     public void onDestroy() {
         float_img.setEnabled(false);
         windowManager.removeView(float_img);
+        try {
+            WriteIGDestroy();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 }

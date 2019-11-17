@@ -7,15 +7,17 @@
     <string name="recogimg">图像识别</string>
     <string name="floatwin">悬浮窗</string>
     <string name="test">test</string>
-    <string name="recording">录制功能（ROOT！）</string>
-    <string name="simulate">模拟功能（ROOT！）</string>
-    <string name="delfile">清空文件</string>
+    <string name="recording">制造糖果（ROOT！）</string>
+    <string name="simulate">品尝糖果（ROOT！）</string>
+    <string name="del">抢走糖果</string>
     <string name="FileManager">文件管理</string>
     <string name="core">按键精灵</string>
     <string name="one">1</string>
     <string name="myName">by 李半默</string>
-    <string name="depository">模拟仓库</string>
+    <string name="depository">精灵仓库</string>
     <string name="data">数据</string>
-    <string name="mov">MOV</string>
-    <string name="length">length</string>
+    <string name="mov">精灵</string>
+    <string name="length">糖果</string>
+    <string name="startRecord">使用</string>
+
 </resources>
