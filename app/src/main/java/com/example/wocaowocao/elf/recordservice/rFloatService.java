@@ -19,7 +19,7 @@ import com.example.wocaowocao.R;
 
 import java.io.IOException;
 
-import static com.example.wocaowocao.base.CMD.WriteIGDestroy;
+import static com.example.wocaowocao.base.CMD.WriteGestureDestroy;
 import static com.example.wocaowocao.base.CMD.initMovFile;
 
 
@@ -40,7 +40,7 @@ public class rFloatService extends Service {
         super.onCreate();
         try {
             initMovFile(CMD.MOVnub);
-            CMD.WriteIGInit(CMD.MOVnub);
+            CMD.WriteGestureInit(CMD.MOVnub);
             createToucher();
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,7 +126,7 @@ public class rFloatService extends Service {
         float_img.setEnabled(false);
         windowManager.removeView(float_img);
         try {
-            WriteIGDestroy();
+            WriteGestureDestroy();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".recogImg.recogImgActivity" />
-        <activity android:name=".depository.depositoryActivity" />
+        <activity android:name=".depository.DepositoryActivity" />
         <activity android:name=".elf.CoreActivity" />
 
         <service android:name=".elf.recordservice.rFloatService" />

@@ -19,5 +19,7 @@
     <string name="mov">精灵</string>
     <string name="length">糖果</string>
     <string name="startRecord">使用</string>
+    <string name="newelf">产生新精灵</string>
+    <string name="die">回归自然</string>
 
 </resources>

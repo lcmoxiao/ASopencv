@@ -9,23 +9,30 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.example.wocaowocao.base.BaseActivity;
+import com.example.wocaowocao.base.CMD;
 import com.example.wocaowocao.base.ViewInject;
 import com.example.wocaowocao.elf.CoreActivity;
-import com.example.wocaowocao.depository.depositoryActivity;
+import com.example.wocaowocao.depository.DepositoryActivity;
 import com.example.wocaowocao.recogImg.recogImgActivity;
 import com.example.wocaowocao.recogImg.useOpencv;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import butterknife.BindView;
 
-import static com.example.wocaowocao.base.CMD.exec;
 import static com.example.wocaowocao.base.CMD.initFloatParams;
+import static com.example.wocaowocao.base.CMD.isRoot;
+
 
 
 @ViewInject(main_layout_id = R.layout.activity_main)
@@ -50,7 +57,6 @@ public class MainActivity extends BaseActivity {
         initFloatParams();
     }
 
-
     void initClick() {
         mainBtn1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,83 +65,51 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-
         mainBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                upgradeRootPermission();
-
-                    startActivity(new Intent(MainActivity.this, CoreActivity.class));
-
-
+                if(!isRoot())Toast.makeText(getApplicationContext(),"没ROOT不给用", Toast.LENGTH_SHORT).show();
+                else startActivity(new Intent(MainActivity.this, CoreActivity.class));
             }
         });
         mainBtn3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, depositoryActivity.class));
+                startActivity(new Intent(MainActivity.this, DepositoryActivity.class));
             }
         });
     }
 
-
     // 初始化权限
     private void initPermission() {
-        //检查是否已经授予悬浮窗权限
-        if (!Settings.canDrawOverlays(this)) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW}, 67);
+        if(!Settings.canDrawOverlays(this)) {
+            Toast.makeText(getApplicationContext(), "麻烦手动开启一下悬浮窗权限 ", Toast.LENGTH_SHORT).show();
+            finish();
         }
         //读写权限检查
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 67);
         }
-        requestRoot();
     }
 
-    public static void requestRoot()
-    {
-        try (DataOutputStream os = new DataOutputStream(Runtime.getRuntime().exec("su").getOutputStream())) {
-            exec("\"chmod 777 \"+getPackageCodePath()", os);
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == 67) {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getApplicationContext(),"授权成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(),"不给权限拉倒", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
-    public static boolean upgradeRootPermission( ) {
-        Process process = null;
-        DataOutputStream os = null;
-        try {
-            Log.i("roottest", "try it");
-            String cmd = "touch /data/roottest.txt";
-            process = Runtime.getRuntime().exec("su"); //切换到root帐号
-            os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes(cmd + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-            process.waitFor();
-        } catch (Exception e) {
-            return false;
-        } finally {
-                if (os != null) {
-                    try {
-                        os.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                assert process != null;
-                process.destroy();
-        }
-        return true;
-    }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.e("xxx", "Activity销毁");
-
     }
-
-
 }

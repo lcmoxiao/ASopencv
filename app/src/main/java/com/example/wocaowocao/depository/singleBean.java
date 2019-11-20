@@ -11,5 +11,11 @@ class singleBean {
         desc=_desc;
     }
 
+    singleBean(int _length,int _desc)
+    {
+        length= String.valueOf(_length);
+        desc= String.valueOf(_desc);
+    }
+
 
 }

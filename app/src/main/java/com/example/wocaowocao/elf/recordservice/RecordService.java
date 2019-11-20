@@ -39,7 +39,9 @@ public class RecordService extends Service {
     WindowManager.LayoutParams params;
     //实例化的WindowManager.
     WindowManager windowManager;
-    private float x,y;
+    private float x,y,downX,downY;
+    boolean isSlipped;
+
     static int motivationNub = 0;
 
     @Override
@@ -112,10 +114,17 @@ public class RecordService extends Service {
 
                 int action = event.getAction();
                 if (action == MotionEvent.ACTION_UP){
+                    downX = event.getRawX();
+                    downY = event.getRawY();
+                }
+                if (action == MotionEvent.ACTION_UP){
                     //得到相对应屏幕左上角的坐标
                     x = event.getRawX();
                     y = event.getRawY();
                     windowManager.removeView(record_img);
+                    double distance = Math.sqrt(Math.abs(downX-x)*Math.abs(downX-x)+Math.abs(downY-y)*Math.abs(downY-y));//两点之间的距离
+                    // 距离较小，当作click事件来处理
+                    //isSlipped = !(distance < 15);暂时解决不了滑动手势的问题
                     t.start();
                 }
                 return false;
@@ -138,43 +147,52 @@ public class RecordService extends Service {
         }
     };
 
+
+
     void Record() throws FileNotFoundException {
         Bitmap bitmap;
         synchronized (t) {
-            Shot(motivationNub,CMD.MOVnub);
-            CMD.WriteGesture((int) x, (int) y, motivationNub);
-            bitmap = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV"+CMD.MOVnub+"/images/", motivationNub + ".png")));
-            //给截空图用的
-            try {
-                //识别动作图，如果一致则通过识别，不然就反复读取。
-                while (CMD.isRecording) {
-                    Log.e("xxx", "识别1");
-                    t.wait(1000);
-                    if (useOpencv.NewCompare(getScreen(), bitmap)) {
-                        //通过识别，移除覆盖层，模拟点击
-                        motivationNub++;
-                        CMD.simulateClick((int) x, (int) y, CMD.execOS);
-                        Log.e("xxx", "通过识别1");
-                        break;
-                    } else
-                        Log.e("xxx", "不一致再次识别");
-                }
-                //识别模拟点击是否通过，如果一致则通过识别,不然就再点一次
-                while (CMD.isRecording) {
-                    t.wait(1000);
-                    if (!useOpencv.NewCompare(getScreen(), bitmap)) {
-                        Log.e("xxx", "通过识别2");
-                        Log.e("xxx", "一个动作记录完毕");
-                        CMD.simulateClick(CMD.RparamX + 50, CMD.RparamY + 150, CMD.execOS);
-                        Log.e("xxx", "已自动点击点击录制按钮" + (CMD.RparamX + 50) + (CMD.RparamY + 150));
-                        break;
-                    } else {
-                        Log.e("xxx", "一致再次点击");
-                        CMD.simulateClick((int) x, (int) y, CMD.execOS);
+            Shot(motivationNub, CMD.MOVnub);
+            if (!isSlipped) {
+                CMD.WriteGesture((int) x, (int) y);
+                bitmap = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV" + CMD.MOVnub + "/images/", motivationNub + ".png")));
+                //给截空图用的
+                try {
+                    //识别动作图，如果一致则通过识别，不然就反复读取。
+                    while (CMD.isRecording) {
+                        Log.e("xxx", "识别1");
+                        if (useOpencv.NewCompare(getScreen(), bitmap)) {
+                            //通过识别，移除覆盖层，模拟点击
+                            motivationNub++;
+                            CMD.simulateClick((int) x, (int) y);
+                            Log.e("xxx", "通过识别1");
+                            break;
+                        } else
+                            Log.e("xxx", "不一致再次识别");
                     }
-
+                    //等待1s的界面加载
+                    t.wait(500);
+                    //识别模拟点击是否通过，如果一致则通过识别,不然就再点一次
+                    while (CMD.isRecording) {
+                        if (!useOpencv.NewCompare(getScreen(), bitmap)) {
+                            Log.e("xxx", "通过识别2");
+                            Log.e("xxx", "一个动作记录完毕");
+                            CMD.simulateClick(CMD.RparamX + 50, CMD.RparamY + 150);
+                            Log.e("xxx", "已自动点击点击录制按钮" + (CMD.RparamX + 50) + (CMD.RparamY + 150));
+                            break;
+                        } else {
+                            Log.e("xxx", "一致再次点击");
+                            CMD.simulateClick((int) x, (int) y);
+                        }
+                    }
+                } catch (Exception ignored) {
                 }
-            }catch (Exception ignored){}
+            }else{
+                CMD.WriteGesture((int)downX,(int)downY,(int) x, (int) y);
+
+
+
+            }
         }
 
 
@@ -185,7 +203,6 @@ public class RecordService extends Service {
     @Override
     public void onDestroy() {
         record_img.setEnabled(false);
-
         super.onDestroy();
     }
 }
