@@ -24,13 +24,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".recogImg.recogImgActivity" />
-        <activity android:name=".depository.DepositoryActivity" />
-        <activity android:name=".elf.CoreActivity" />
+        <activity android:name=".witch.elfDepository.DepositoryActivity" />
+        <activity android:name=".witch.elf.CoreActivity" />
 
-        <service android:name=".elf.recordservice.rFloatService" />
-        <service android:name=".elf.recordservice.RecordService" />
-        <service android:name=".elf.simulateservice.simulateFloatService" />
-        <service android:name=".elf.shotService" />
+        <service android:name=".witch.elf.recordservice.recordFloatService" />
+        <service android:name=".witch.elf.simulateservice.simulateFloatService" />
+        <service android:name=".witch.elf.shotService" />
     </application>
 
 </manifest>

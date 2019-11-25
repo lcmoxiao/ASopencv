@@ -1,4 +1,4 @@
-package com.example.wocaowocao.elf;
+package com.example.wocaowocao.witch.elf;
 
 import android.app.Service;
 import android.content.Context;
@@ -17,10 +17,6 @@ import androidx.annotation.Nullable;
 import java.nio.ByteBuffer;
 
 
-
-/**
- * Created by dzjin on 2018/1/9.
- */
 public class shotService extends Service {
 
 
@@ -62,14 +58,12 @@ public class shotService extends Service {
 
     }
 
-
     public static Bitmap startCapture() {
 
         mImageReader.getSurface();
-        image = mImageReader.acquireNextImage();
+        image = mImageReader.acquireLatestImage();
 
         int width = image.getWidth();
-
         int height = image.getHeight();
 
         final Image.Plane[] planes = image.getPlanes();

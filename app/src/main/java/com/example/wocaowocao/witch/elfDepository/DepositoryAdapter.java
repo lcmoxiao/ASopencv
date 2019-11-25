@@ -1,4 +1,4 @@
-package com.example.wocaowocao.depository;
+package com.example.wocaowocao.witch.elfDepository;
 
 
 import android.content.Context;
@@ -14,12 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wocaowocao.R;
+import com.example.wocaowocao.RootShell.RootShell;
 import com.example.wocaowocao.base.CMD;
-import com.example.wocaowocao.elf.CoreActivity;
+import com.example.wocaowocao.witch.elf.CoreActivity;
 
 import java.util.ArrayList;
 
-import static com.example.wocaowocao.base.CMD.isRoot;
 
 
 public class DepositoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
@@ -94,9 +94,9 @@ public class DepositoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 itemHolder.btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!isRoot()) Toast.makeText(mContext,"没ROOT你用不了,放弃吧", Toast.LENGTH_SHORT).show();
+                        if(!RootShell.isRootAvailable()) Toast.makeText(mContext,"没ROOT你用不了,放弃吧", Toast.LENGTH_SHORT).show();
                         else {
-                            CMD.MOVnub = position + 1;
+                            DepositoryActivity.MOVnub = position + 1;
                             Intent intent = new Intent(mContext, CoreActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                             mContext.startActivity(intent);
@@ -134,7 +134,7 @@ public class DepositoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    void updatedata(ArrayList<singleBean> data)
+    void updateData(ArrayList<singleBean> data)
     {
         this.data = data;
     }

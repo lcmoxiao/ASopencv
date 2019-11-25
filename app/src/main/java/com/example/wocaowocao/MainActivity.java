@@ -10,41 +10,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-
 import com.example.wocaowocao.base.BaseActivity;
-import com.example.wocaowocao.base.CMD;
 import com.example.wocaowocao.base.ViewInject;
-import com.example.wocaowocao.elf.CoreActivity;
-import com.example.wocaowocao.depository.DepositoryActivity;
+import com.example.wocaowocao.base.elfDataBaseManager;
+import com.example.wocaowocao.witch.elfDepository.DepositoryActivity;
 import com.example.wocaowocao.recogImg.recogImgActivity;
 import com.example.wocaowocao.recogImg.useOpencv;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
 import butterknife.BindView;
-
-import static com.example.wocaowocao.base.CMD.initFloatParams;
-import static com.example.wocaowocao.base.CMD.isRoot;
-
 
 
 @ViewInject(main_layout_id = R.layout.activity_main)
 public class MainActivity extends BaseActivity {
-
     @BindView(R.id.main_btn1)
     Button mainBtn1;
     @BindView(R.id.main_btn2)
     Button mainBtn2;
     @BindView(R.id.main_btn3)
     Button mainBtn3;
-
     @BindView(R.id.activity_main)
     FrameLayout mLayout;
 
@@ -54,7 +38,6 @@ public class MainActivity extends BaseActivity {
         initClick();
         initPermission();
         useOpencv.staticLoadCVLibraries();
-        initFloatParams();
     }
 
     void initClick() {
@@ -68,10 +51,18 @@ public class MainActivity extends BaseActivity {
         mainBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isRoot())Toast.makeText(getApplicationContext(),"没ROOT不给用", Toast.LENGTH_SHORT).show();
-                else startActivity(new Intent(MainActivity.this, CoreActivity.class));
+                elfDataBaseManager baseManager = new elfDataBaseManager(getBaseContext());
+                baseManager.create_MOV(1);
+
+                baseManager.add(1,1,1,1,null);
+
+                baseManager.add(1,1,1,1,1,1,null);
+
+                baseManager.clear_MOV(1);
+
             }
         });
+
         mainBtn3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,8 +95,6 @@ public class MainActivity extends BaseActivity {
             }
         }
     }
-
-
 
     @Override
     protected void onDestroy() {

@@ -1,4 +1,4 @@
-package com.example.wocaowocao.elf;
+package com.example.wocaowocao.witch.elf;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,14 +13,12 @@ import androidx.annotation.RequiresApi;
 
 import com.example.wocaowocao.base.BaseActivity;
 import com.example.wocaowocao.base.ViewInject;
-import com.example.wocaowocao.base.CMD;
 import com.example.wocaowocao.R;
-import com.example.wocaowocao.elf.recordservice.rFloatService;
-import com.example.wocaowocao.elf.simulateservice.simulateFloatService;
+import com.example.wocaowocao.base.elfDataBaseManager;
+import com.example.wocaowocao.witch.elf.recordservice.recordFloatService;
+import com.example.wocaowocao.witch.elf.simulateservice.simulateFloatService;
 
 import butterknife.BindView;
-
-import static com.example.wocaowocao.base.CMD.dataPath;
 
 
 @ViewInject(main_layout_id = R.layout.activity_core)
@@ -30,19 +28,30 @@ public class CoreActivity extends BaseActivity {
     Button selectBtn2;
     @BindView(R.id.core_btn2)
     Button selectBtn3;
-    @BindView(R.id.core_btn3)
-    Button selectBtn4;
-
     // 是否打开录制悬浮窗
-    static Boolean isrFloating = false;
-    // 是否打开模拟悬浮窗
-    static Boolean issFloating = false;
+    public static Boolean isrFloating = false;
+    // 是否打开操作悬浮窗
+    public static Boolean issFloating = false;
+    //数据库接口
+    elfDataBaseManager dataBaseManager;
 
     @Override
     public void afterBindView()  {
         initClick();
         startScreenRecord();
         getScreenBaseInfo();
+    }
+
+    /**
+     * 获取屏幕基本信息
+     */
+    private void getScreenBaseInfo() {
+        //A structure describing general information about a display, such as its size, density, and font scaling.
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mScreenWidth = metrics.widthPixels;
+        mScreenHeight = metrics.heightPixels;
+        mScreenDensity = metrics.densityDpi;
     }
 
     private int mScreenWidth;
@@ -54,10 +63,10 @@ public class CoreActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (isrFloating) {
-                    stopService(new Intent(CoreActivity.this, rFloatService.class));
+                    stopService(new Intent(CoreActivity.this, recordFloatService.class));
                     isrFloating = false;
                 } else {
-                    startService(new Intent(CoreActivity.this, rFloatService.class));
+                    startService(new Intent(CoreActivity.this, recordFloatService.class));
                     isrFloating = true;
                 }
             }
@@ -75,24 +84,6 @@ public class CoreActivity extends BaseActivity {
                 }
             }
         });
-
-        selectBtn4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CMD.delFile(dataPath + "MOV"+CMD.MOVnub);
-            }
-        });
-    }
-    /**
-     * 获取屏幕基本信息
-     */
-    private void getScreenBaseInfo() {
-        //A structure describing general information about a display, such as its size, density, and font scaling.
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        mScreenWidth = metrics.widthPixels;
-        mScreenHeight = metrics.heightPixels;
-        mScreenDensity = metrics.densityDpi;
     }
 
     @Override
@@ -110,7 +101,7 @@ public class CoreActivity extends BaseActivity {
                 startService(intent);
                 //Toast.makeText(this, "成功开启服务", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "服务开启失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "服务开启失败,无法截屏，退出", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
@@ -132,7 +123,6 @@ public class CoreActivity extends BaseActivity {
         Intent service = new Intent(this, shotService.class);
         stopService(service);
     }
-
 
     @Override
     protected void onDestroy() {

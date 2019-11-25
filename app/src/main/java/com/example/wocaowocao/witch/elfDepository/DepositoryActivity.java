@@ -1,15 +1,11 @@
-package com.example.wocaowocao.depository;
+package com.example.wocaowocao.witch.elfDepository;
 
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.base.BaseActivity;
-import com.example.wocaowocao.base.CMD;
 import com.example.wocaowocao.base.ViewInject;
 
 import butterknife.BindView;
@@ -17,6 +13,8 @@ import butterknife.BindView;
 @ViewInject(main_layout_id = R.layout.activity_depository)
 public class DepositoryActivity extends BaseActivity {
 
+    //动作控制中心MOVnub
+    public static int MOVnub = 1;
 
     //主页中的RecycleView
     @BindView(R.id.mRecycleView)
@@ -39,7 +37,7 @@ public class DepositoryActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         dataManager.update();
-        madapter.updatedata(dataManager.mList);
+        madapter.updateData(dataManager.mList);
         madapter.notifyDataSetChanged();
     }
 
@@ -47,7 +45,6 @@ public class DepositoryActivity extends BaseActivity {
     public void afterBindView() {
         initRecycleView();
     }
-
 
     @Override
     protected void onDestroy() {

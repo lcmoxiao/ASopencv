@@ -30,7 +30,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:background="@drawable/selector_main_activity_button"
-            android:text="@string/core" />
+            android:text="@string/test" />
 
         <Button
             android:id="@+id/main_btn3"

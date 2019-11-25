@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 
 import com.example.wocaowocao.base.BaseActivity;
@@ -76,10 +75,9 @@ public class recogImgActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                if(useOpencv.NewCompare(Bp1, Bp2))
-                    Toast.makeText(getBaseContext(),"真像",Toast.LENGTH_LONG).show();
-                else
-                    Toast.makeText(getBaseContext(),"不像",Toast.LENGTH_LONG).show();
+                useOpencv.NewCompare(Bp1, Bp2);
+                useOpencv.DiffCompare(Bp1, Bp2);
+
             }
         });
     }

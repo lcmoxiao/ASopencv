@@ -80,7 +80,39 @@ public class useOpencv {
 
     //像返回true，不想false。
     public static boolean NewCompare(Bitmap Bp1, Bitmap Bp2) {
-        int precision = 64;
+        int precision = 32;
+        Mat src1 = new Mat();
+        Mat dst1 = new Mat();
+        Mat src2 = new Mat();
+        Mat dst2 = new Mat();
+        //读取位图到MAT
+        Utils.bitmapToMat(Bp1, src1);
+        Utils.bitmapToMat(Bp2, src2);
+        //四通变三通，三通变一通
+        cvtColor(src1, dst1, Imgproc.COLOR_BGR2GRAY);
+        cvtColor(src2, dst2, Imgproc.COLOR_BGR2GRAY);
+        //缩成8*8
+        resize(dst1, dst1, new Size(precision, precision), 0, 0, INTER_CUBIC);
+        resize(dst2, dst2, new Size(precision, precision), 0, 0, INTER_CUBIC);
+
+
+        //计算差异值
+        double iDiffNum = 0;
+        //get灰度给data，计算每个像素的灰度差异。
+        for (int i = 0; i < precision; i++) {
+            for (int j = 0; j < precision; j++) {
+                if(abs(dst1.get(i, j)[0]-dst2.get(i, j)[0])>10)iDiffNum++;
+            }
+        }
+        Log.e("xx", "有那么多处不同" +iDiffNum);
+        Log.e("xx", "相似度" +((precision*precision-iDiffNum)/(precision*precision)));
+        //输出什么看个人喜好
+        return iDiffNum <= 100;
+    }
+
+    //像返回true，不想false。
+    public static boolean DiffCompare(Bitmap Bp1, Bitmap Bp2) {
+        int precision = 32;
         Mat src1 = new Mat();
         Mat dst1 = new Mat();
         Mat src2 = new Mat();
@@ -100,18 +132,24 @@ public class useOpencv {
         double[][] data1 = new double[precision*precision][1];
         double[][] data2 = new double[precision*precision][1];
         //计算差异值
-        int iDiffNum = 0;
+        double iDiffNum = 0;
         //get灰度给data，计算每个像素的灰度差异。
         for (int i = 0; i < precision; i++) {
             int tmp = i * precision;
-            for (int j = 0; j < precision; j++) {
+            for (int j = 0; j < precision-1; j++) {
                 int tmp1 = tmp + j;
+                boolean b1,b2;
                 data1[tmp1] = dst1.get(i, j);
+                data1[tmp1+1] = dst1.get(i, j+1);
+                b1 = data1[tmp1][0]>data1[tmp1+1][0];
                 data2[tmp1] = dst2.get(i, j);
-                if(abs(data1[tmp1][0]-data2[tmp1][0])>10)iDiffNum++;
+                data2[tmp1+1] = dst2.get(i, j+1);
+                b2 = data2[tmp1][0]>data2[tmp1+1][0];
+                if(b1!=b2)iDiffNum++;
             }
         }
         Log.e("xx", "有那么多处不同" +iDiffNum);
+        Log.e("xx", "相似度" +((precision*precision-iDiffNum)/(precision*precision)));
         //输出什么看个人喜好
         return iDiffNum <= 100;
     }
