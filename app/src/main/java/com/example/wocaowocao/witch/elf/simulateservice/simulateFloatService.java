@@ -27,16 +27,9 @@ import com.example.wocaowocao.R;
 import com.example.wocaowocao.recogImg.useOpencv;
 import com.example.wocaowocao.witch.elf.CoreActivity;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
-
-import static com.example.wocaowocao.witch.elfDepository.DepositoryActivity.MOVnub;
+import static com.example.wocaowocao.witch.elf.CoreActivity.elfManager;
 import static com.example.wocaowocao.witch.elf.shotService.startCapture;
+import static com.example.wocaowocao.witch.elfDepository.DepositoryActivity.MOVnub;
 
 public class simulateFloatService extends Service {
 
@@ -52,32 +45,15 @@ public class simulateFloatService extends Service {
 
 
 
-    public static BufferedReader br = null;
-
     //读取的动作位置
     int imagesNub;
-    int[] downXs,downYs,xs,ys,types;
-    Bitmap[] bitmaps;
     boolean isforced =false;
 
     @Override
     public void onCreate() {
         super.onCreate();
         initFloatParams();
-        imagesNub = new File(CMD.dataPath + "MOV"+MOVnub+"/images").listFiles().length;
-        xs = new int [imagesNub];
-        ys = new int [imagesNub];
-        downXs  = new int [imagesNub];
-        downYs = new int [imagesNub];
-        types = new int [imagesNub];
-        bitmaps = new Bitmap[imagesNub];
-        try {
-            ReadGestureInit(MOVnub);
-            initXYOP();
-            initBitmaps();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        elfManager.getInitData(MOVnub);
         createToucher();
     }
 
@@ -88,6 +64,7 @@ public class simulateFloatService extends Service {
             super.run();
             //开始模拟
             int motivationNub=0;
+            imagesNub = elfManager.getMovSize(MOVnub);
             Log.e("xx", "t start with" + (motivationNub));
             while (motivationNub < imagesNub && isSimulating) {
                 //加点延迟，给界面刷新用
@@ -99,14 +76,14 @@ public class simulateFloatService extends Service {
                     }
                 }
                 try{
-                    if (useOpencv.NewCompare(startCapture(), bitmaps[motivationNub])) {
+                    if (useOpencv.NewCompare(startCapture(), elfManager.bitmaps[motivationNub])) {
                         Log.e("xx", "找到了图片" + (motivationNub));
-                        if(types[motivationNub]==0) {
-                            CMD.simulateClick(xs[motivationNub], ys[motivationNub]);
-                            Log.e("xx", "将要点击"+"x:"+xs[motivationNub]+"y:"+ys[motivationNub]);
+                        if(elfManager.types[motivationNub]==1) {
+                            CMD.simulateClick(elfManager.downXs[motivationNub], elfManager.downYs[motivationNub]-100);
+                            Log.e("xx", "将要点击"+"x:"+elfManager.downXs[motivationNub]+"y:"+elfManager.downXs[motivationNub]);
                     }
-                        else if(types[motivationNub]==1){
-                            CMD.simulateSwipe(downXs[motivationNub],downYs[motivationNub],xs[motivationNub], ys[motivationNub]);
+                        else if(elfManager.types[motivationNub]==2){
+                            CMD.simulateSwipe(elfManager.downXs[motivationNub],elfManager.downYs[motivationNub],elfManager.xs[motivationNub], elfManager.ys[motivationNub]);
                             Log.e("xx", "将要滑动");
                         }
                         motivationNub++;
@@ -154,45 +131,8 @@ public class simulateFloatService extends Service {
         windowManager.addView(float_img, floatParams);
     }
 
-    //初始化操作坐标
-    void initXYOP()
-    {
-        int motivationNub=0;
-        String [] str;
-        String line;
-        try {
-            while((line=br.readLine())!=null) {
-                str = line.split(",");
-                types[motivationNub] = Integer.parseInt(str[0]);
-                if(types[motivationNub]==0) {
-                    xs[motivationNub] = Integer.parseInt(str[1]);
-                    ys[motivationNub] = Integer.parseInt(str[2]);
-                }
-                else if(types[motivationNub]==1)
-                {
-                    downXs[motivationNub] = Integer.parseInt(str[1]);
-                    downYs[motivationNub] = Integer.parseInt(str[2]);
-                    xs[motivationNub] = Integer.parseInt(str[3]);
-                    ys[motivationNub] = Integer.parseInt(str[4]);
-                }
-                motivationNub++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    //初始化操作图库
-    void initBitmaps() {
-        for (int i = 0; i < imagesNub; i++)
-        {
-            try {
-                bitmaps[i] = BitmapFactory.decodeStream(new FileInputStream(new File(CMD.dataPath + "MOV"+MOVnub+"/images/", (i) + ".png")));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+
 
     @Nullable
     @Override
@@ -250,24 +190,13 @@ public class simulateFloatService extends Service {
         floatParams.height = 100;
     }
 
-    public static void ReadGestureInit(int MOVnub) throws IOException {
-        br = new BufferedReader(new FileReader(CMD.dataPath+"MOV"+MOVnub+"/gesture.txt"));
-    }
 
-    public static void ReadGestureDestroy() throws IOException {
-        br.close();
-    }
 
     @Override
     public void onDestroy() {
         float_img.setEnabled(false);
         windowManager.removeView(float_img);
         CoreActivity.issFloating = false;
-        try {
-            ReadGestureDestroy();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         super.onDestroy();
     }
 }

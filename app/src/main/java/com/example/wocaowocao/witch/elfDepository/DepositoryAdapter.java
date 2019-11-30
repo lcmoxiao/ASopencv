@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.wocaowocao.R;
@@ -20,6 +21,7 @@ import com.example.wocaowocao.witch.elf.CoreActivity;
 
 import java.util.ArrayList;
 
+import static com.example.wocaowocao.witch.elfDepository.DepositoryActivity.elfManager;
 
 
 public class DepositoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
@@ -58,7 +60,12 @@ public class DepositoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-
+    //自定义Holder
+    class NullHolder extends RecyclerView.ViewHolder {
+        NullHolder(View itemView) {
+            super(itemView);
+        }
+    }
 
     @NonNull
     @Override
@@ -79,7 +86,7 @@ public class DepositoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 return new ButtonHolder(view);
             }
         }
-        return null;
+        return new NullHolder(null);
     }
 
 
@@ -110,7 +117,7 @@ public class DepositoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     @Override
                     public void onClick(View v) {
                         int MOVnub = data.size()+1;
-                        CMD.initMovFile(MOVnub);
+                        elfManager.create_MOV(MOVnub);
                         data.add(new singleBean(0,MOVnub));
                         notifyDataSetChanged();
                     }
@@ -120,7 +127,7 @@ public class DepositoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     @Override
                     public void onClick(View v) {
                         int MOVnub = data.size();
-                        CMD.delFile(MOVnub);
+                        elfManager.delete_MOV(MOVnub);
                         data.remove(MOVnub-1);
                         notifyDataSetChanged();
 

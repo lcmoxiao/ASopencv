@@ -82,7 +82,7 @@ public class shotService extends Service {
 
         image.close();
 
-        return Bitmap.createBitmap(bitmap, 0, 0, width, height);
+        return Bitmap.createScaledBitmap(bitmap, 150,150,true);
     }
 
     @Override

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.base.BaseActivity;
 import com.example.wocaowocao.base.ViewInject;
+import com.example.wocaowocao.witch.elfDataBaseManager;
 
 import butterknife.BindView;
 
@@ -20,12 +21,14 @@ public class DepositoryActivity extends BaseActivity {
     @BindView(R.id.mRecycleView)
     RecyclerView mRecycleView;
 
-    DataManager dataManager;
+    depositoryDataManager dataManager;
     DepositoryAdapter madapter;
+    static elfDataBaseManager elfManager;
 
     //初始化界面
     private void initRecycleView() {
-        dataManager = new DataManager();
+        elfManager = new elfDataBaseManager(this);
+        dataManager = new depositoryDataManager();
         //设置布局管理器
         mRecycleView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //设置适配器adapter
@@ -48,6 +51,7 @@ public class DepositoryActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        elfManager.close();
         super.onDestroy();
     }
 

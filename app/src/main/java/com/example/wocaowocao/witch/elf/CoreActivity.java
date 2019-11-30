@@ -14,7 +14,7 @@ import androidx.annotation.RequiresApi;
 import com.example.wocaowocao.base.BaseActivity;
 import com.example.wocaowocao.base.ViewInject;
 import com.example.wocaowocao.R;
-import com.example.wocaowocao.base.elfDataBaseManager;
+import com.example.wocaowocao.witch.elfDataBaseManager;
 import com.example.wocaowocao.witch.elf.recordservice.recordFloatService;
 import com.example.wocaowocao.witch.elf.simulateservice.simulateFloatService;
 
@@ -32,11 +32,12 @@ public class CoreActivity extends BaseActivity {
     public static Boolean isrFloating = false;
     // 是否打开操作悬浮窗
     public static Boolean issFloating = false;
-    //数据库接口
-    elfDataBaseManager dataBaseManager;
+
+    public static elfDataBaseManager elfManager;
 
     @Override
     public void afterBindView()  {
+        elfManager = new elfDataBaseManager(this);
         initClick();
         startScreenRecord();
         getScreenBaseInfo();
@@ -126,6 +127,7 @@ public class CoreActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        elfManager.close();
         stopScreenRecord();
         super.onDestroy();
     }

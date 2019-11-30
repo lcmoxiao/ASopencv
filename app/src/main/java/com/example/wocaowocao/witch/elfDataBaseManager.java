@@ -1,4 +1,4 @@
-package com.example.wocaowocao.base;
+package com.example.wocaowocao.witch;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,43 +17,49 @@ import java.io.IOException;
 
 public class elfDataBaseManager extends SQLiteOpenHelper {
 
-    int[] downXs,downYs,xs,ys,types;
-    Bitmap[] bitmaps;
+    public int[] downXs,downYs,xs,ys;
+    public int[] types;
+    public Bitmap[] bitmaps;
 
-    //(int id,int type,int x1,int y1,int x2,int y2,blob img)
+    //(int type,int x1,int y1,int x2,int y2,blob img)
     public void getInitData(int MovNub)
     {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query("MOV"+MovNub, new String[]{"type","x1","y1","x2","y2","img"}, null, null, null, null, null);
-
-        int size = cursor.getCount();
+        int size = getMovSize(MovNub);
         if(size == 0)return;
+        SQLiteDatabase db = this.getWritableDatabase();
 
-        xs = new int [size];
-        ys = new int [size];
+        Cursor cursor = db.query("MOV"+MovNub, new String[]{"type","x1","y1","x2","y2"}, null, null, null, null, null);
+        types = new int [size];
         downXs  = new int [size];
         downYs = new int [size];
-        types = new int [size];
-        bitmaps = new Bitmap [size];
-
+        xs = new int [size];
+        ys = new int [size];
         for(int id=0 ; id < size ; id++)
         {
-            types[id] = cursor.getInt(0);
-            downXs[id] = cursor.getInt(1);
-            downYs[id] = cursor.getInt(2);
+            cursor.moveToNext();
+            types[id] = cursor.getInt(0);logxx(types[id]+"");
+            downXs[id] = cursor.getInt(1);logxx(downXs[id]+"");
+            downYs[id] = cursor.getInt(2);logxx(downYs[id]+"");
             if(types[id]==2) {//滑动手势
-                xs[id] = cursor.getInt(3);
-                ys[id] = cursor.getInt(4);
+                xs[id] = cursor.getInt(3);logxx(xs[id]+"");
+                ys[id] = cursor.getInt(4);logxx(ys[id]+"");
             }else {
                 xs[id] = -1;
                 ys[id] = -1;
             }
-            byte[] imgdata = cursor.getBlob(5);
-            bitmaps[id] = BitmapFactory.decodeByteArray(imgdata,0,imgdata.length);
-            cursor.moveToNext();
         }
-        db.close();
         cursor.close();
+
+        cursor = db.query("MOV"+MovNub, new String[]{"img"}, null, null, null, null, null);
+        bitmaps = new Bitmap [size];
+        for(int id=0 ; id < size ; id++)
+        {
+            cursor.moveToNext();
+            byte[] imgdata = cursor.getBlob(0);
+            bitmaps[id] = BitmapFactory.decodeByteArray(imgdata,0,imgdata.length);
+         }
+        cursor.close();
+        db.close();
     }
 
     public int getMovNub()
@@ -77,7 +83,7 @@ public class elfDataBaseManager extends SQLiteOpenHelper {
     public int getMovSize(int MovNub)
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("MOV"+MovNub, new String[]{"type","x1","y1","x2","y2","img"}, null, null, null, null, null);
+        Cursor cursor = db.query("MOV"+MovNub, new String[]{"type"}, null, null, null, null, null);
         int size = cursor.getCount();
         cursor.close();
         db.close();
@@ -162,15 +168,18 @@ public class elfDataBaseManager extends SQLiteOpenHelper {
 
     //图片转为二进制数据
     private byte[] bitmapToBytes( Bitmap bitmap){
-        if(bitmap == null)return new byte[0];
+
+        if(bitmap == null) {logxx("娘的");return new byte[0];}
         //将图片转化为位图
-        int size = bitmap.getWidth() * bitmap.getHeight() * 4;
+        int size = bitmap.getByteCount();
+        logxx("size=" +size );
         //创建一个字节数组输出流,流的大小为size
         ByteArrayOutputStream baos= new ByteArrayOutputStream(size);
         try {
             //设置位图的压缩格式，质量为100%，并放入字节数组输出流中
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 50, baos);
             //将字节数组输出流转化为字节数组byte[]
+            logxx("成功截图");
             return baos.toByteArray();
         }catch (Exception ignored){
         }finally {
@@ -181,7 +190,12 @@ public class elfDataBaseManager extends SQLiteOpenHelper {
                 e.printStackTrace();
             }
         }
+        logxx("fuck");
         return new byte[0];
+    }
+
+    private void logxx(String str){
+        Log.e("xx",str);
     }
 
 

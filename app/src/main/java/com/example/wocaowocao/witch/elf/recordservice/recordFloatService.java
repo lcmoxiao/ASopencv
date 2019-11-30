@@ -23,20 +23,13 @@ import com.example.wocaowocao.RootShell.execution.Command;
 import com.example.wocaowocao.R;
 import com.example.wocaowocao.witch.elf.CoreActivity;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+
 import java.util.ArrayList;
 
-import static com.example.wocaowocao.base.CMD.dataPath;
-import static com.example.wocaowocao.base.CMD.delFile;
-import static com.example.wocaowocao.witch.elfDepository.DepositoryActivity.MOVnub;
+import static com.example.wocaowocao.witch.elf.CoreActivity.elfManager;
 import static com.example.wocaowocao.witch.elf.shotService.startCapture;
+import static com.example.wocaowocao.witch.elfDepository.DepositoryActivity.MOVnub;
+
 
 
 public class recordFloatService extends Service {
@@ -45,11 +38,8 @@ public class recordFloatService extends Service {
     ImageView float_img;
     //实例化的WindowManager.
     WindowManager windowManager;
-    private static OutputStream writeOS = null;
-    private static PrintWriter pw=null;
     // 是否在录制
     public static Boolean isRecording = false;
-    private int motivationNub = 0;
 
     //悬浮窗的参数
     public WindowManager.LayoutParams floatParams;
@@ -58,8 +48,8 @@ public class recordFloatService extends Service {
     public void onCreate() {
         super.onCreate();
         try {
+            elfManager.clear_MOV(MOVnub);
             initFloatParams();
-            InitWriteGesture(MOVnub);
             createToucher();
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +108,7 @@ public class recordFloatService extends Service {
         private ArrayList<String> lines = new ArrayList<>();
         private int [] clickPosition = {-1,-1,-1,-1};
         private boolean fastShot = false;
-
+        private Bitmap tmpBit;
 
         @Override
         public void run() {
@@ -130,26 +120,25 @@ public class recordFloatService extends Service {
                             if(lines.size()>=10) {
                                 clickPosition[0] = Integer.parseInt(lines.get(3).split(" ")[2],16);
                                 clickPosition[1] = Integer.parseInt(lines.get(4).split(" ")[2],16);
-                                if(!fastShot){
+                                if(!fastShot){//为了防止滑动到最末才开始截图。
                                     fastShot=true;
-                                    Shot(motivationNub, MOVnub);
+                                    tmpBit = startCapture();
+
                                 }
                                 if(isRecording) {
                                     if (lines.get(6).split(" ")[2].equals("ffffffff")) {
                                         fastShot = false;
                                         Log.e("xxx", "isclick x " + clickPosition[0] + " and y " + clickPosition[1]);
-                                        WriteGesture(clickPosition[0], clickPosition[1]);
+                                        elfManager.add(MOVnub,1,clickPosition[0],clickPosition[1],tmpBit);
                                         Log.e("xxx", "录制了一次点击");
-                                        motivationNub++;
                                         lines.clear();
                                     } else if (lines.get(lines.size() - 4).split(" ")[2].equals("ffffffff")) {
                                         fastShot = false;
                                         clickPosition[2] = Integer.parseInt(lines.get(lines.size() - 7).split(" ")[2], 16);
                                         clickPosition[3] = Integer.parseInt(lines.get(lines.size() - 6).split(" ")[2], 16);
                                         Log.e("xxx", "isslip x " + clickPosition[0] + "and y" + clickPosition[1] + " to " + clickPosition[2] + " " + clickPosition[3]);
-                                        WriteGesture(clickPosition[0], clickPosition[1], clickPosition[2], clickPosition[3]);
+                                        elfManager.add(MOVnub,2,clickPosition[0], clickPosition[1], clickPosition[2], clickPosition[3],tmpBit);
                                         Log.e("xxx", "录制了一次滑动");
-                                        motivationNub++;
                                         lines.clear();
                                     }
                                 }
@@ -165,62 +154,14 @@ public class recordFloatService extends Service {
     }
 
 
-    //初始化 写手势
-    public void InitWriteGesture(int MOVnub) throws IOException {
-        writeOS = new FileOutputStream(dataPath+"MOV"+MOVnub+"/gesture.txt",true);
-        pw=new PrintWriter(writeOS);
-        pw.flush();
-    }
 
-    public void DestroyWriteGesture() throws IOException {
-        pw.close();
-        writeOS.close();
-    }
 
-    public void WriteGesture(int x,int y){
-        String s=0+","+x+","+y;
-        pw.println(s);
-        pw.flush();
-    }
 
-    public void WriteGesture(int downX, int downY, int x, int y) {
-        String s=1+","+downX+","+downY+","+x+","+y;
-        pw.println(s);
-        pw.flush();
-    }
 
-    //
-    public int getMovImageLength()
-    {
-        return new File(dataPath+"MOV"+MOVnub+"/images").listFiles().length;
-    }
 
-    public void delLastImage()
-    {
-        delFile(dataPath+"MOV"+MOVnub+"/images/"+(getMovImageLength()-1)+".png");//getMovImageLength()-1因为标号从0开始
-    }
 
-    public static int getMovGestureLength()
-    {
-        LineNumberReader br = null;
-        try {
-            br = new LineNumberReader(new FileReader(dataPath+"MOV"+MOVnub+"/gesture.txt"));
-            br.skip(Long.MAX_VALUE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert br != null;
-        return br.getLineNumber();
-    }
 
-    public void Shot(int motivationNub, int MOVnub){
-        Bitmap screen = startCapture();
-        try {
-            screen.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dataPath+"MOV"+MOVnub+"/images/"+motivationNub+".png")) );
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     public void initFloatParams() {
         //赋值WindowManager&LayoutParam.
@@ -247,15 +188,7 @@ public class recordFloatService extends Service {
         float_img.setEnabled(false);
         windowManager.removeView(float_img);
         CoreActivity.isrFloating = false;
-        try {
-            DestroyWriteGesture();
-            if(getMovImageLength()!=getMovGestureLength()) {
-                delLastImage();
-                Log.e("xxx","清除了多余的一张快照");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         super.onDestroy();
     }
 

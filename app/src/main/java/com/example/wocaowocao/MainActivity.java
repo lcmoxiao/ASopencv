@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import com.example.wocaowocao.base.BaseActivity;
 import com.example.wocaowocao.base.ViewInject;
-import com.example.wocaowocao.base.elfDataBaseManager;
+import com.example.wocaowocao.witch.elfDataBaseManager;
 import com.example.wocaowocao.witch.elfDepository.DepositoryActivity;
 import com.example.wocaowocao.recogImg.recogImgActivity;
 import com.example.wocaowocao.recogImg.useOpencv;
@@ -51,14 +51,6 @@ public class MainActivity extends BaseActivity {
         mainBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                elfDataBaseManager baseManager = new elfDataBaseManager(getBaseContext());
-                baseManager.create_MOV(1);
-
-                baseManager.add(1,1,1,1,null);
-
-                baseManager.add(1,1,1,1,1,1,null);
-
-                baseManager.clear_MOV(1);
 
             }
         });
